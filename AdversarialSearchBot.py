@@ -5,8 +5,9 @@ from typing import List
 import numpy as np
 
 class AdversarialSearchBot(Bot):
-    def __init__(self, max_depth: int = 5):
+    def __init__(self, max_depth: int = 5, is_player1: bool = False):
         self.max_depth = max_depth
+        self.is_player1 = is_player1
 
     def get_action(self, state: GameState) -> GameAction:
         actions = self.generate_actions(state)
@@ -116,4 +117,4 @@ class AdversarialSearchBot(Bot):
                 elif state.board_status[y, x] == -4:
                     utility -= 1
 
-        return -utility
+        return utility if self.is_player1 else -utility

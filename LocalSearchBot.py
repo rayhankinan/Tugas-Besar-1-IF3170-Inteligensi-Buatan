@@ -7,10 +7,11 @@ import math
 import numpy as np
 
 class LocalSearchBot(Bot):
-    def __init__(self, initial_temperature: float = 0, schedule: Callable[[int], float] = lambda t: math.e ** (-t), precision: float = 1E-18) -> None:
+    def __init__(self, initial_temperature: float = 0, schedule: Callable[[int], float] = lambda t: math.e ** (-t), precision: float = 1E-18, is_player1: bool = False) -> None:
         self.initial_temperature = initial_temperature
         self.schedule = schedule
         self.precision = precision
+        self.is_player1 = is_player1
 
     def get_action(self, state: GameState) -> GameAction:
         current = self.get_random_action(state)
@@ -23,14 +24,14 @@ class LocalSearchBot(Bot):
             next = self.get_random_successor_action(state, current)
             delta = self.get_value(state, next) - self.get_value(state, current)
 
-            print(next, current) # DELETE THIS LATER
-            print(delta) # DELETE THIS LATER
+            # print(next, current) # DELETE THIS LATER
+            # print(delta) # DELETE THIS LATER
 
             if delta > 0 or random.random() < math.e ** (delta / current_temperature):
                 current = next
             time += 1
 
-        print("Terpilih: ", current) # DELETE THIS LATER
+        # print("Terpilih:", current) # DELETE THIS LATER
         return current
 
     def get_random_action(self, state: GameState) -> GameAction:
@@ -112,4 +113,4 @@ class LocalSearchBot(Bot):
                 elif new_state.board_status[y, x] == -4:
                     utility -= 1
 
-        return -utility
+        return utility if self.is_player1 else -utility
