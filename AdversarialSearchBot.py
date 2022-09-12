@@ -4,8 +4,6 @@ from GameState import GameState
 from typing import List
 import numpy as np
 
-number_of_dots = 4
-
 class AdversarialSearchBot(Bot):
     def get_action(self, state: GameState) -> GameAction:
         actions = self.generate_actions(state)
@@ -20,7 +18,7 @@ class AdversarialSearchBot(Bot):
         for position in row_positions:
             actions.append(GameAction("row", position))
         for position in col_positions:
-            actions.append(GameAction("row", position))
+            actions.append(GameAction("col", position))
 
         return actions
 
@@ -44,7 +42,9 @@ class AdversarialSearchBot(Bot):
         is_point_scored = False
         val = 1
 
-        if y < number_of_dots - 1 and x < number_of_dots - 1:
+        # FIX THIS
+        [ny, nx] = new_state.board_status.shape
+        if y < ny and x < nx:
             new_state.board_status[y, x] = abs(new_state.board_status[y, x] + val) * player_modifier
             if abs(new_state.board_status[y, x]) == 4:
                 is_point_scored = True
