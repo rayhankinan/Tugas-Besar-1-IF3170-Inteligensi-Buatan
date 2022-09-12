@@ -25,6 +25,7 @@ class LocalSearchBot(Bot):
             if delta > 0 or random.random() < math.e ** (delta / current_temperature):
                 current = next
             time += 1
+            print(self.get_value(state, next), self.get_value(state, current))
             print(delta) # DELETE THIS LATER
 
         print(current) # DELETE THIS LATER

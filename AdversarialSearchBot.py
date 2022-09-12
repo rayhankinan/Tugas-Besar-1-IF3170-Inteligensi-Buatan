@@ -111,7 +111,7 @@ class AdversarialSearchBot(Bot):
             for x in range(nx):
                 if state.board_status[y, x] == 4:
                     utility += 1
-                else:
+                elif state.board_status[y, x] == -4:
                     utility -= 1
 
         return -utility
