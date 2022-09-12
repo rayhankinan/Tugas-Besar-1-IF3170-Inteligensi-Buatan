@@ -4,6 +4,8 @@ from GameState import GameState
 from typing import List
 import numpy as np
 
+MAX_DEPTH = 5
+
 class AdversarialSearchBot(Bot):
     def get_action(self, state: GameState) -> GameAction:
         actions = self.generate_actions(state)
@@ -66,15 +68,15 @@ class AdversarialSearchBot(Bot):
         # print(action, new_state) # DELETE THIS LATER
         return new_state
 
-    def get_minimax_value(self, state: GameState, alpha: float = -np.inf, beta: float = np.inf) -> float: # BUG: ENDLESS LOOP
-        if self.terminal_test(state):
+    def get_minimax_value(self, state: GameState, depth: int = 0, alpha: float = -np.inf, beta: float = np.inf) -> float: # BUG: ENDLESS LOOP
+        if self.terminal_test(state) or depth == MAX_DEPTH:
             # print(self.get_utility(state)) # DELETE THIS LATER
             return self.get_utility(state)
         elif not state.player1_turn:
             value = -np.inf
             actions = self.generate_actions(state)
             for action in actions:
-                value = max(value, self.get_minimax_value(self.get_result(state, action), alpha, beta)) # BUG HERE
+                value = max(value, self.get_minimax_value(self.get_result(state, action), depth + 1, alpha, beta)) # BUG HERE
                 alpha = max(alpha, value)
                 if beta <= alpha:
                     break
@@ -84,7 +86,7 @@ class AdversarialSearchBot(Bot):
             value = np.inf
             actions = self.generate_actions(state)
             for action in actions:
-                value = min(value, self.get_minimax_value(self.get_result(state, action), alpha, beta)) # BUG HERE
+                value = min(value, self.get_minimax_value(self.get_result(state, action), depth + 1, alpha, beta)) # BUG HERE
                 beta = min(beta, value)
                 if beta <= alpha:
                     break
@@ -106,9 +108,9 @@ class AdversarialSearchBot(Bot):
 
         for y in range(ny):
             for x in range(nx):
-                if state.board_status[y, x] > 0:
-                    utility -= 1
-                else:
+                if state.board_status[y, x] == 4:
                     utility += 1
+                else:
+                    utility -= 1
 
-        return utility
+        return -utility
