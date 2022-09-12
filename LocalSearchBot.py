@@ -7,7 +7,7 @@ import math
 import numpy as np
 
 class LocalSearchBot(Bot):
-    def __init__(self, initial_temperature: float = 0, schedule: Callable[[int], float] = lambda t: math.e ** (-t), precision: float = 1E-12) -> None:
+    def __init__(self, initial_temperature: float = 0, schedule: Callable[[int], float] = lambda t: math.e ** (-t), precision: float = 1E-18) -> None:
         self.initial_temperature = initial_temperature
         self.schedule = schedule
         self.precision = precision
@@ -30,7 +30,7 @@ class LocalSearchBot(Bot):
                 current = next
             time += 1
 
-        print(current) # DELETE THIS LATER
+        print("Terpilih: ", current) # DELETE THIS LATER
         return current
 
     def get_random_action(self, state: GameState) -> GameAction:
