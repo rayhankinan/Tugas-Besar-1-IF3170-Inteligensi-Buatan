@@ -4,9 +4,10 @@ from GameState import GameState
 from typing import List
 import numpy as np
 
-MAX_DEPTH = 5
-
 class AdversarialSearchBot(Bot):
+    def __init__(self, max_depth: int = 5):
+        self.max_depth = max_depth
+
     def get_action(self, state: GameState) -> GameAction:
         actions = self.generate_actions(state)
         print([self.get_minimax_value(self.get_result(state, action)) for action in actions]) # DELETE THIS LATER
@@ -69,7 +70,7 @@ class AdversarialSearchBot(Bot):
         return new_state
 
     def get_minimax_value(self, state: GameState, depth: int = 0, alpha: float = -np.inf, beta: float = np.inf) -> float: # BUG: ENDLESS LOOP
-        if self.terminal_test(state) or depth == MAX_DEPTH:
+        if self.terminal_test(state) or depth == self.max_depth:
             # print(self.get_utility(state)) # DELETE THIS LATER
             return self.get_utility(state)
         elif not state.player1_turn:
