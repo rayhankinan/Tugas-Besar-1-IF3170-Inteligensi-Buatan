@@ -10,6 +10,7 @@ from Bot import Bot
 from GameState import GameState
 from RandomBot import RandomBot
 from AdversarialSearchBot import AdversarialSearchBot
+from LocalSearchBot import LocalSearchBot
 
 size_of_board = 600
 number_of_dots = 4
@@ -307,5 +308,5 @@ class Dots_and_Boxes():
         self.update(action.action_type, action.position)
 
 if __name__ == "__main__":
-    game_instance = Dots_and_Boxes(None, AdversarialSearchBot())
+    game_instance = Dots_and_Boxes(None, LocalSearchBot())
     game_instance.mainloop()

@@ -37,7 +37,7 @@ class AdversarialSearchBot(Bot):
 
         return positions
 
-    def get_result(self, state: GameState, action: GameAction) -> GameState: # BUG: ENDLESS LOOP
+    def get_result(self, state: GameState, action: GameAction) -> GameState:
         type = action.action_type
         x, y = action.position
 
@@ -69,7 +69,7 @@ class AdversarialSearchBot(Bot):
         # print(action, new_state) # DELETE THIS LATER
         return new_state
 
-    def get_minimax_value(self, state: GameState, depth: int = 0, alpha: float = -np.inf, beta: float = np.inf) -> float: # BUG: ENDLESS LOOP
+    def get_minimax_value(self, state: GameState, depth: int = 0, alpha: float = -np.inf, beta: float = np.inf) -> float:
         if self.terminal_test(state) or depth == self.max_depth:
             # print(self.get_utility(state)) # DELETE THIS LATER
             return self.get_utility(state)
@@ -77,7 +77,7 @@ class AdversarialSearchBot(Bot):
             value = -np.inf
             actions = self.generate_actions(state)
             for action in actions:
-                value = max(value, self.get_minimax_value(self.get_result(state, action), depth + 1, alpha, beta)) # BUG HERE
+                value = max(value, self.get_minimax_value(self.get_result(state, action), depth + 1, alpha, beta))
                 alpha = max(alpha, value)
                 if beta <= alpha:
                     break
@@ -87,7 +87,7 @@ class AdversarialSearchBot(Bot):
             value = np.inf
             actions = self.generate_actions(state)
             for action in actions:
-                value = min(value, self.get_minimax_value(self.get_result(state, action), depth + 1, alpha, beta)) # BUG HERE
+                value = min(value, self.get_minimax_value(self.get_result(state, action), depth + 1, alpha, beta))
                 beta = min(beta, value)
                 if beta <= alpha:
                     break
