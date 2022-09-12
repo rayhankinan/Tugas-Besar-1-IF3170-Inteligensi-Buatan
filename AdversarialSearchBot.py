@@ -34,7 +34,7 @@ class AdversarialSearchBot(Bot):
 
         return positions
 
-    def get_result(self, state: GameState, action: GameAction) -> GameState: # BUG: CHECK WHETHER BOX IS FULL OR NOT
+    def get_result(self, state: GameState, action: GameAction) -> GameState: # BUG: ENDLESS LOOP
         type = action.action_type
         x, y = action.position
 
@@ -45,19 +45,19 @@ class AdversarialSearchBot(Bot):
 
         [ny, nx] = new_state.board_status.shape
         if y < ny and x < nx:
-            new_state.board_status[y, x] = abs(new_state.board_status[y, x] + val) * player_modifier
+            new_state.board_status[y, x] = (abs(new_state.board_status[y, x]) + val) * player_modifier
             if abs(new_state.board_status[y, x]) == 4:
                 is_point_scored = True
 
         if type == "row":
             new_state.row_status[y, x] = 1
-            if y >= 1:
+            if y > 0:
                 new_state.board_status[y - 1, x] = (abs(new_state.board_status[y - 1, x]) + val) * player_modifier
                 if abs(new_state.board_status[y - 1, x]) == 4:
                     is_point_scored = True
         elif type == "col":
             new_state.col_status[y, x] = 1
-            if x >= 1:
+            if x > 0:
                 new_state.board_status[y, x - 1] = (abs(new_state.board_status[y, x - 1]) + val) * player_modifier
                 if abs(new_state.board_status[y, x - 1]) == 4:
                     is_point_scored = True
@@ -66,8 +66,9 @@ class AdversarialSearchBot(Bot):
         # print(action, new_state) # DELETE THIS LATER
         return new_state
 
-    def get_minimax_value(self, state: GameState, alpha: float = -np.inf, beta: float = np.inf) -> float:
+    def get_minimax_value(self, state: GameState, alpha: float = -np.inf, beta: float = np.inf) -> float: # BUG: ENDLESS LOOP
         if self.terminal_test(state):
+            # print(self.get_utility(state)) # DELETE THIS LATER
             return self.get_utility(state)
         elif not state.player1_turn:
             value = -np.inf
@@ -77,6 +78,7 @@ class AdversarialSearchBot(Bot):
                 alpha = max(alpha, value)
                 if beta <= alpha:
                     break
+            # print(value) # DELETE THIS LATER
             return value
         else:
             value = np.inf
@@ -86,6 +88,7 @@ class AdversarialSearchBot(Bot):
                 beta = min(beta, value)
                 if beta <= alpha:
                     break
+            # print(value) # DELETE THIS LATER
             return value
 
     def terminal_test(self, state: GameState) -> bool:
