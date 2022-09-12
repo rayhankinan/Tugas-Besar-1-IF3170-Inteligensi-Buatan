@@ -7,7 +7,7 @@ import math
 import numpy as np
 
 class LocalSearchBot(Bot):
-    def __init__(self, initial_temperature: float = 0, schedule: Callable[[int], float] = lambda t: math.e ** (-t), precision: float = 1E-6) -> None:
+    def __init__(self, initial_temperature: float = 0, schedule: Callable[[int], float] = lambda t: math.e ** (-t), precision: float = 1E-12) -> None:
         self.initial_temperature = initial_temperature
         self.schedule = schedule
         self.precision = precision
@@ -22,11 +22,13 @@ class LocalSearchBot(Bot):
 
             next = self.get_random_successor_action(state, current)
             delta = self.get_value(state, next) - self.get_value(state, current)
+
+            print(next, current) # DELETE THIS LATER
+            print(delta) # DELETE THIS LATER
+
             if delta > 0 or random.random() < math.e ** (delta / current_temperature):
                 current = next
             time += 1
-            print(self.get_value(state, next), self.get_value(state, current))
-            print(delta) # DELETE THIS LATER
 
         print(current) # DELETE THIS LATER
         return current
@@ -99,15 +101,15 @@ class LocalSearchBot(Bot):
         return new_state
 
     def get_value(self, state: GameState, action: GameAction) -> float:
-        result = self.get_result(state, action)
-        [ny, nx] = result.board_status.shape
-        value = 0
+        new_state = self.get_result(state, action)
+        [ny, nx] = new_state.board_status.shape
+        utility = 0
 
         for y in range(ny):
             for x in range(nx):
-                if result.board_status[y, x] == 4:
-                    value += 1
-                else:
-                    value -= 1
+                if new_state.board_status[y, x] == 4:
+                    utility += 1
+                elif new_state.board_status[y, x] == -4:
+                    utility -= 1
 
-        return -value
+        return -utility
