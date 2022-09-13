@@ -24,13 +24,11 @@ class LocalSearchBot(Bot):
             next = self.get_random_action(state)
             delta = self.get_value(state, next) - self.get_value(state, current)
 
-            print(current, next, delta) # DELETE THIS LINE
 
             if delta > 0 or random.random() < math.e ** (delta / current_temperature):
                 current = next
             time += 1
 
-        print("Selected", current) # DELETE THIS LINE
         return current
 
     def get_random_action(self, state: GameState) -> GameAction:

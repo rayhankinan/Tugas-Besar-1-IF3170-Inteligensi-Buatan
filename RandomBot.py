@@ -6,12 +6,6 @@ import numpy as np
 
 class RandomBot(Bot):
     def get_action(self, state: GameState) -> GameAction:
-        # print("#### DEBUG ####")
-        # print(state.board_status)
-        # print(state.row_status)
-        # print(state.col_status)
-        # print(state.player1_turn)
-        # print("#### DEBUG ####")
         all_row_marked = np.all(state.row_status == 1)
         all_col_marked = np.all(state.col_status == 1)
 
@@ -30,14 +24,10 @@ class RandomBot(Bot):
 
     def get_random_row_action(self, state: GameState) -> GameAction:
         position = self.get_random_position_with_zero_value(state.row_status)
-        print(position)
         return GameAction("row", position)
 
     def get_random_position_with_zero_value(self, matrix: np.ndarray) -> tuple[int, int]:
         [ny, nx] = matrix.shape
-        # print("#### DEBUG ####")
-        # print(ny, nx)
-        # print("#### DEBUG ####")
 
         x = -1
         y = -1
@@ -52,5 +42,4 @@ class RandomBot(Bot):
 
     def get_random_col_action(self, state: GameState) -> GameAction:
         position = self.get_random_position_with_zero_value(state.col_status)
-        print(position)
         return GameAction("col", position)
