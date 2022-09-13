@@ -13,8 +13,8 @@ class AdversarialSearchBot(Bot):
         actions = self.generate_actions(state)
         utilities = np.array([self.get_minimax_value(self.get_result(state, action)) for action in actions])
         index = np.random.choice(np.flatnonzero(utilities == utilities.max()))
-        print(utilities) # DELETE THIS LATER
-        print(index) # DELETE THIS LATER
+        # print(utilities) # DELETE THIS LATER
+        # print(index) # DELETE THIS LATER
         return actions[index]
 
     def generate_actions(self, state: GameState) -> List[GameAction]:

@@ -21,7 +21,7 @@ class LocalSearchBot(Bot):
             if abs(current_temperature - self.initial_temperature) <= self.precision:
                 break
 
-            next = self.get_random_successor_action(state, current)
+            next = self.get_random_action(state)
             delta = self.get_value(state, next) - self.get_value(state, current)
 
             # print(next, current) # DELETE THIS LATER
@@ -38,10 +38,6 @@ class LocalSearchBot(Bot):
         actions = self.generate_actions(state)
         return random.choice(actions)
 
-    def get_random_successor_action(self, state: GameState, action: GameAction) -> GameState:
-        successor_actions = self.generate_successor_actions(state, action)
-        return random.choice(successor_actions)
-
     def generate_actions(self, state: GameState) -> List[GameAction]:
         row_positions = self.generate_positions(state.row_status)
         col_positions = self.generate_positions(state.col_status)
@@ -53,10 +49,6 @@ class LocalSearchBot(Bot):
             actions.append(GameAction("col", position))
 
         return actions
-
-    def generate_successor_actions(self, state: GameState, action: GameAction) -> List[GameState]:
-        # TODO: ADD THIS SECTION
-        return self.generate_actions(state)
 
     def generate_positions(self, matrix: np.ndarray) -> List[tuple[int, int]]:
         [ny, nx] = matrix.shape

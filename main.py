@@ -22,8 +22,8 @@ player1_color_light = '#67B0CF'
 player2_color = '#EE4035'
 player2_color_light = '#EE7E77'
 Green_color = '#7BC043'
-dot_width = 0.25*size_of_board/number_of_dots
-edge_width = 0.1*size_of_board/number_of_dots
+dot_width = 0.25 * size_of_board / number_of_dots
+edge_width = 0.1 * size_of_board / number_of_dots
 distance_between_dots = size_of_board / (number_of_dots)
 
 BOT_TURN_INTERVAL_MS = 100
@@ -308,5 +308,5 @@ class Dots_and_Boxes():
         self.update(action.action_type, action.position)
 
 if __name__ == "__main__":
-    game_instance = Dots_and_Boxes(LocalSearchBot(is_player1=True), AdversarialSearchBot(is_player1=False))
+    game_instance = Dots_and_Boxes(RandomBot(), LocalSearchBot(is_player1=False))
     game_instance.mainloop()
