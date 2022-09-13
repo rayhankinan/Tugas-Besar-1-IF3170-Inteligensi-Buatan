@@ -7,7 +7,7 @@ import math
 import numpy as np
 
 class LocalSearchBot(Bot):
-    def __init__(self, initial_temperature: float = 0, schedule: Callable[[int], float] = lambda t: math.e ** (-t), precision: float = 1E-18, is_player1: bool = False) -> None:
+    def __init__(self, initial_temperature: float = 0, schedule: Callable[[int], float] = lambda t: math.e ** (-t), precision: float = 1E-300, is_player1: bool = False) -> None:
         self.initial_temperature = initial_temperature
         self.schedule = schedule
         self.precision = precision
