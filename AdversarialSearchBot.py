@@ -13,8 +13,6 @@ class AdversarialSearchBot(Bot):
         actions = self.generate_actions(state)
         utilities = np.array([self.get_minimax_value(self.get_result(state, action)) for action in actions])
         index = np.random.choice(np.flatnonzero(utilities == utilities.max()))
-        # print(utilities) # DELETE THIS LATER
-        # print(index) # DELETE THIS LATER
         return actions[index]
 
     def generate_actions(self, state: GameState) -> List[GameAction]:
@@ -69,12 +67,10 @@ class AdversarialSearchBot(Bot):
                     is_point_scored = True
 
         new_state = new_state._replace(player1_turn = not (new_state.player1_turn ^ is_point_scored))
-        # print(action, new_state) # DELETE THIS LATER
         return new_state
 
     def get_minimax_value(self, state: GameState, depth: int = 0, alpha: float = -np.inf, beta: float = np.inf) -> float:
         if self.terminal_test(state) or depth == self.max_depth:
-            # print(self.get_utility(state)) # DELETE THIS LATER
             return self.get_utility(state)
         elif not state.player1_turn:
             value = -np.inf
@@ -84,7 +80,6 @@ class AdversarialSearchBot(Bot):
                 alpha = max(alpha, value)
                 if beta <= alpha:
                     break
-            # print(value) # DELETE THIS LATER
             return value
         else:
             value = np.inf
@@ -94,7 +89,6 @@ class AdversarialSearchBot(Bot):
                 beta = min(beta, value)
                 if beta <= alpha:
                     break
-            # print(value) # DELETE THIS LATER
             return value
 
     def terminal_test(self, state: GameState) -> bool:

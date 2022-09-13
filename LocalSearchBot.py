@@ -24,14 +24,9 @@ class LocalSearchBot(Bot):
             next = self.get_random_action(state)
             delta = self.get_value(state, next) - self.get_value(state, current)
 
-            # print(next, current) # DELETE THIS LATER
-            # print(delta) # DELETE THIS LATER
-
             if delta > 0 or random.random() < math.e ** (delta / current_temperature):
                 current = next
             time += 1
-
-        # print("Terpilih:", current) # DELETE THIS LATER
         return current
 
     def get_random_action(self, state: GameState) -> GameAction:
@@ -90,7 +85,6 @@ class LocalSearchBot(Bot):
                     is_point_scored = True
 
         new_state = new_state._replace(player1_turn = not (new_state.player1_turn ^ is_point_scored))
-        # print(action, new_state) # DELETE THIS LATER
         return new_state
 
     def get_value(self, state: GameState, action: GameAction) -> float:
