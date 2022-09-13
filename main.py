@@ -308,5 +308,5 @@ class Dots_and_Boxes():
         self.update(action.action_type, action.position)
 
 if __name__ == "__main__":
-    game_instance = Dots_and_Boxes(None, LocalSearchBot(is_player1=False))
+    game_instance = Dots_and_Boxes(AdversarialSearchBot(is_player1=True), None)
     game_instance.mainloop()
