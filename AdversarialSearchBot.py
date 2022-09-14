@@ -74,7 +74,7 @@ class AdversarialSearchBot(Bot):
                 if abs(new_state.board_status[y, x - 1]) == 4:
                     is_point_scored = True
 
-         # Jika bot di player 1 maka kita ingin bot mendapatkan point sebesar mungkin maka langkah ini akan diambil
+        # Jika bot di player 1 maka kita ingin bot mendapatkan point sebesar mungkin maka langkah ini akan diambil
         # Jika bot berada di player 2 maka kita ingin player 1 tidak mendapatkan poin sehingga kita ingin mengambil aksi dimana player 1 tidak mendapatkan poin
         new_state = new_state._replace(player1_turn = not (new_state.player1_turn ^ is_point_scored))
         return new_state
