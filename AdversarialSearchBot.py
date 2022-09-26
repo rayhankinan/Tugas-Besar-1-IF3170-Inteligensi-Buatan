@@ -122,6 +122,7 @@ class AdversarialSearchBot(Bot):
         [ny, nx] = state.board_status.shape
         utility = 0
 
+        # TODO: Mungkin bisa dicoba dengan fungsi yang lebih mendeskrispsikan kondisi game
         for y in range(ny):
             for x in range(nx):
                 if state.board_status[y, x] == 4:

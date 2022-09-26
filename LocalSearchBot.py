@@ -107,6 +107,7 @@ class LocalSearchBot(Bot):
         [ny, nx] = new_state.board_status.shape
         utility = 0
 
+        # TODO: Mungkin bisa dicoba dengan fungsi yang lebih mendeskrispsikan kondisi game
         for y in range(ny):
             for x in range(nx):
                 if new_state.board_status[y, x] == 4:
