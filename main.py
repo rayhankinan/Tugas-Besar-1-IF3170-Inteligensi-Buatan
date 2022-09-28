@@ -29,6 +29,7 @@ distance_between_dots = size_of_board / (number_of_dots)
 BOT_TURN_INTERVAL_MS = 100
 LEFT_CLICK = '<Button-1>'
 
+
 class Dots_and_Boxes():
     # ------------------------------------------------------------------
     # Initialization functions
@@ -36,7 +37,8 @@ class Dots_and_Boxes():
     def __init__(self, bot1: Optional[Bot] = None, bot2: Optional[Bot] = None):
         self.window = Tk()
         self.window.title('Dots_and_Boxes')
-        self.canvas = Canvas(self.window, width=size_of_board, height=size_of_board)
+        self.canvas = Canvas(
+            self.window, width=size_of_board, height=size_of_board)
         self.canvas.pack()
         self.player1_starts = True
         self.refresh_board()
@@ -47,7 +49,8 @@ class Dots_and_Boxes():
 
     def play_again(self):
         self.refresh_board()
-        self.board_status = np.zeros(shape=(number_of_dots - 1, number_of_dots - 1))
+        self.board_status = np.zeros(
+            shape=(number_of_dots - 1, number_of_dots - 1))
         self.row_status = np.zeros(shape=(number_of_dots, number_of_dots - 1))
         self.col_status = np.zeros(shape=(number_of_dots - 1, number_of_dots))
         self.pointsScored = False
@@ -85,7 +88,8 @@ class Dots_and_Boxes():
 
     def convert_grid_to_logical_position(self, grid_position):
         grid_position = np.array(grid_position)
-        position = (grid_position-distance_between_dots/4)//(distance_between_dots/2)
+        position = (grid_position-distance_between_dots /
+                    4)//(distance_between_dots/2)
 
         type = False
         logical_position = []
@@ -102,21 +106,21 @@ class Dots_and_Boxes():
             type = 'col'
 
         return logical_position, type
-    
+
     def pointScored(self):
         self.pointsScored = True
-        
+
     def mark_box(self):
         boxes = np.argwhere(self.board_status == -4)
         for box in boxes:
-            if list(box) not in self.already_marked_boxes and list(box) !=[]:
+            if list(box) not in self.already_marked_boxes and list(box) != []:
                 self.already_marked_boxes.append(list(box))
                 color = player1_color_light
                 self.shade_box(box, color)
 
         boxes = np.argwhere(self.board_status == 4)
         for box in boxes:
-            if list(box) not in self.already_marked_boxes and list(box) !=[]:
+            if list(box) not in self.already_marked_boxes and list(box) != []:
                 self.already_marked_boxes.append(list(box))
                 color = player2_color_light
                 self.shade_box(box, color)
@@ -128,27 +132,29 @@ class Dots_and_Boxes():
         playerModifier = 1
         if self.player1_turn:
             playerModifier = -1
-            
 
         if y < (number_of_dots-1) and x < (number_of_dots-1):
-            self.board_status[y][x] = (abs(self.board_status[y][x]) + val) * playerModifier
+            self.board_status[y][x] = (
+                abs(self.board_status[y][x]) + val) * playerModifier
             if abs(self.board_status[y][x]) == 4:
                 self.pointScored()
 
         if type == 'row':
             self.row_status[y][x] = 1
             if y >= 1:
-                self.board_status[y-1][x] = (abs(self.board_status[y-1][x]) + val) * playerModifier
+                self.board_status[y-1][x] = (abs(self.board_status[y-1]
+                                             [x]) + val) * playerModifier
                 if abs(self.board_status[y-1][x]) == 4:
                     self.pointScored()
 
         elif type == 'col':
             self.col_status[y][x] = 1
             if x >= 1:
-                self.board_status[y][x-1] = (abs(self.board_status[y][x-1]) + val) * playerModifier
+                self.board_status[y][x -
+                                     1] = (abs(self.board_status[y][x-1]) + val) * playerModifier
                 if abs(self.board_status[y][x-1]) == 4:
                     self.pointScored()
-                
+
     def is_gameover(self):
         return (self.row_status == 1).all() and (self.col_status == 1).all()
 
@@ -159,21 +165,26 @@ class Dots_and_Boxes():
 
     def make_edge(self, type, logical_position):
         if type == 'row':
-            start_x = distance_between_dots/2 + logical_position[0]*distance_between_dots
+            start_x = distance_between_dots/2 + \
+                logical_position[0]*distance_between_dots
             end_x = start_x+distance_between_dots
-            start_y = distance_between_dots/2 + logical_position[1]*distance_between_dots
+            start_y = distance_between_dots/2 + \
+                logical_position[1]*distance_between_dots
             end_y = start_y
         elif type == 'col':
-            start_y = distance_between_dots / 2 + logical_position[1] * distance_between_dots
+            start_y = distance_between_dots / 2 + \
+                logical_position[1] * distance_between_dots
             end_y = start_y + distance_between_dots
-            start_x = distance_between_dots / 2 + logical_position[0] * distance_between_dots
+            start_x = distance_between_dots / 2 + \
+                logical_position[0] * distance_between_dots
             end_x = start_x
 
         if self.player1_turn:
             color = player1_color
         else:
             color = player2_color
-        self.canvas.create_line(start_x, start_y, end_x, end_y, fill=color, width=edge_width)
+        self.canvas.create_line(start_x, start_y, end_x,
+                                end_y, fill=color, width=edge_width)
 
     def display_gameover(self):
         player1_score = len(np.argwhere(self.board_status == -4))
@@ -191,7 +202,8 @@ class Dots_and_Boxes():
             color = 'gray'
 
         self.canvas.delete("all")
-        self.canvas.create_text(size_of_board / 2, size_of_board / 3, font="cmr 60 bold", fill=color, text=text)
+        self.canvas.create_text(
+            size_of_board / 2, size_of_board / 3, font="cmr 60 bold", fill=color, text=text)
 
         score_text = 'Scores \n'
         self.canvas.create_text(size_of_board / 2, 5 * size_of_board / 8, font="cmr 40 bold", fill=Green_color,
@@ -213,7 +225,7 @@ class Dots_and_Boxes():
             x = i*distance_between_dots+distance_between_dots/2
             self.canvas.create_line(x, distance_between_dots/2, x,
                                     size_of_board-distance_between_dots/2,
-                                    fill='gray', dash = (2, 2))
+                                    fill='gray', dash=(2, 2))
             self.canvas.create_line(distance_between_dots/2, x,
                                     size_of_board-distance_between_dots/2, x,
                                     fill='gray', dash=(2, 2))
@@ -240,13 +252,15 @@ class Dots_and_Boxes():
                                                        size_of_board-distance_between_dots/8,
                                                        font="cmr 15 bold", text=text, fill=color)
 
-
     def shade_box(self, box, color):
-        start_x = distance_between_dots / 2 + box[1] * distance_between_dots + edge_width/2
-        start_y = distance_between_dots / 2 + box[0] * distance_between_dots + edge_width/2
+        start_x = distance_between_dots / 2 + \
+            box[1] * distance_between_dots + edge_width/2
+        start_y = distance_between_dots / 2 + \
+            box[0] * distance_between_dots + edge_width/2
         end_x = start_x + distance_between_dots - edge_width
         end_y = start_y + distance_between_dots - edge_width
-        self.canvas.create_rectangle(start_x, start_y, end_x, end_y, fill=color, outline='')
+        self.canvas.create_rectangle(
+            start_x, start_y, end_x, end_y, fill=color, outline='')
 
     def display_turn_text(self):
         text = 'Next turn: '
@@ -260,12 +274,13 @@ class Dots_and_Boxes():
         self.canvas.delete(self.turntext_handle)
         self.turntext_handle = self.canvas.create_text(size_of_board - 5*len(text),
                                                        size_of_board-distance_between_dots/8,
-                                                       font="cmr 15 bold",text=text, fill=color)
+                                                       font="cmr 15 bold", text=text, fill=color)
 
     def click(self, event):
         if not self.reset_board:
             grid_position = [event.x, event.y]
-            logical_position, valid_input = self.convert_grid_to_logical_position(grid_position)
+            logical_position, valid_input = self.convert_grid_to_logical_position(
+                grid_position)
             self.update(valid_input, logical_position)
         else:
             self.canvas.delete("all")
@@ -279,7 +294,8 @@ class Dots_and_Boxes():
             self.make_edge(valid_input, logical_position)
             self.mark_box()
             self.refresh_board()
-            self.player1_turn = (not self.player1_turn) if not self.pointsScored else self.player1_turn
+            self.player1_turn = (
+                not self.player1_turn) if not self.pointsScored else self.player1_turn
             self.pointsScored = False
 
             if self.is_gameover():
@@ -307,6 +323,8 @@ class Dots_and_Boxes():
 
         self.update(action.action_type, action.position)
 
+
 if __name__ == "__main__":
-    game_instance = Dots_and_Boxes(LocalSearchBot(is_player1=True), RandomBot())
+    game_instance = Dots_and_Boxes(LocalSearchBot(
+        is_player1=True), AdversarialSearchBot(is_player1=False, max_depth=3))
     game_instance.mainloop()

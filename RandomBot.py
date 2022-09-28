@@ -4,6 +4,7 @@ from GameState import GameState
 import random
 import numpy as np
 
+
 class RandomBot(Bot):
     def get_action(self, state: GameState) -> GameAction:
         all_row_marked = np.all(state.row_status == 1)
@@ -32,12 +33,12 @@ class RandomBot(Bot):
         x = -1
         y = -1
         valid = False
-        
+
         while not valid:
             x = random.randrange(0, nx)
             y = random.randrange(0, ny)
             valid = matrix[y, x] == 0
-        
+
         return (x, y)
 
     def get_random_col_action(self, state: GameState) -> GameAction:

@@ -1,5 +1,6 @@
 from typing import NamedTuple, Literal, Tuple
 
+
 class GameAction(NamedTuple):
     """
     action_type: "row" or "col"

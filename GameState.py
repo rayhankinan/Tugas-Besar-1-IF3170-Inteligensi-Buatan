@@ -1,6 +1,7 @@
 from typing import NamedTuple
 from numpy import ndarray
 
+
 class GameState(NamedTuple):
     """
     board_status: int[][]
@@ -17,7 +18,7 @@ class GameState(NamedTuple):
     col_status: int[][]
         Represent the vertical line mark status: 1 for marked, 0 for not.
         Access: col_status[y, x]
-        
+
     player1_turn: bool
         True if it is player 1 turn, False for player 2.
     """
