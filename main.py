@@ -283,6 +283,18 @@ class Dots_and_Boxes():
                 grid_position)
             self.update(valid_input, logical_position)
         else:
+            # Bot related variables
+            try:
+                is_player1 = getattr(self.bot1, 'is_player1')
+                setattr(self.bot1, 'is_player1', not is_player1)
+            except AttributeError:
+                pass
+            try:
+                is_player1 = getattr(self.bot2, 'is_player1')
+                setattr(self.bot2, 'is_player1', not is_player1)
+            except AttributeError:
+                pass
+
             self.canvas.delete("all")
             self.play_again()
             self.reset_board = False
@@ -294,8 +306,7 @@ class Dots_and_Boxes():
             self.make_edge(valid_input, logical_position)
             self.mark_box()
             self.refresh_board()
-            self.player1_turn = (
-                not self.player1_turn) if not self.pointsScored else self.player1_turn
+            self.player1_turn = not self.player1_turn if not self.pointsScored else self.player1_turn
             self.pointsScored = False
 
             if self.is_gameover():
@@ -325,6 +336,6 @@ class Dots_and_Boxes():
 
 
 if __name__ == "__main__":
-    game_instance = Dots_and_Boxes(LocalSearchBot(
-        is_player1=True), AdversarialSearchBot(is_player1=False, max_depth=3))
+    game_instance = Dots_and_Boxes(
+        None, AdversarialSearchBot(is_player1=False, max_depth=3))
     game_instance.mainloop()

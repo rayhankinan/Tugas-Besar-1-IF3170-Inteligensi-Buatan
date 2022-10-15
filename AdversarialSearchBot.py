@@ -14,8 +14,9 @@ class AdversarialSearchBot(Bot):
     # Pemilihan aksi yang dilakukan agent
     def get_action(self, state: GameState) -> GameAction:
         actions = self.generate_actions(state)
-        utilities = np.array([self.get_minimax_value(
-            self.get_result(state, action)) for action in actions])
+        utilities = np.array([
+            self.get_minimax_value(self.get_result(state, action)) for action in actions
+        ])
         index = np.random.choice(np.flatnonzero(utilities == utilities.max()))
         return actions[index]
 
@@ -50,8 +51,12 @@ class AdversarialSearchBot(Bot):
         x, y = action.position
 
         # Dilakukan copy agar tidak mengubah status game
-        new_state = GameState(state.board_status.copy(), state.row_status.copy(
-        ), state.col_status.copy(), state.player1_turn)
+        new_state = GameState(
+            state.board_status.copy(),
+            state.row_status.copy(),
+            state.col_status.copy(),
+            state.player1_turn
+        )
         player_modifier = -1 if new_state.player1_turn else 1
         is_point_scored = False
         val = 1
@@ -134,9 +139,14 @@ class AdversarialSearchBot(Bot):
         # TODO: Mungkin bisa dicoba dengan fungsi yang lebih mendeskrispsikan kondisi game
         for y in range(ny):
             for x in range(nx):
-                if state.board_status[y, x] == 4:
-                    utility += 1
-                elif state.board_status[y, x] == -4:
-                    utility -= 1
-
-        return -utility if self.is_player1 else utility
+                if self.is_player1:
+                    if state.board_status[y, x] == -4 or state.board_status[y, x] == 3:
+                        utility += 1
+                    elif state.board_status[y, x] == 4 or state.board_status[y, x] == -3:
+                        utility -= 1
+                else:
+                    if state.board_status[y, x] == -4 or state.board_status[y, x] == 3:
+                        utility -= 1
+                    elif state.board_status[y, x] == 4 or state.board_status[y, x] == -3:
+                        utility += 1
+        return utility
