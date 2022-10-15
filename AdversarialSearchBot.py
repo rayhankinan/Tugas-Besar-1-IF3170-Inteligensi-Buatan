@@ -10,6 +10,18 @@ class AdversarialSearchBot(Bot):
     def __init__(self, max_depth: int = 5, is_player1: bool = False):
         self.max_depth = max_depth
         self.is_player1 = is_player1
+        self.dp = {} #Gamestate -> float
+
+    def stringify(self, state: GameState) -> str:
+        res: str = ""
+        for i in state.board_status:
+            res += str(i)
+        for i in state.col_status:
+            res += str(i)
+        for i in state.row_status:
+            res += str(i)
+        res += str(state.player1_turn)
+        return res
 
     # Pemilihan aksi yang dilakukan agent
     def get_action(self, state: GameState) -> GameAction:
@@ -136,6 +148,8 @@ class AdversarialSearchBot(Bot):
     # Utility function dengan nilai absolute 1 jika box terbentuk.
     def get_utility(self, state: GameState) -> float:
         [ny, nx] = state.board_status.shape
+        if (self.stringify(state) in self.dp.keys()):
+            return self.dp[self.stringify(state)]
         utility = 0
 
         # TODO: Menambahkan heuristik transposition table (untuk melakukan caching nilai utility) dengan corner symmetry
@@ -153,4 +167,70 @@ class AdversarialSearchBot(Bot):
                         utility -= 1
                     elif state.board_status[y, x] == 4:
                         utility += 1
+        self.memoize(state, utility)
         return utility
+
+
+    # Mencari equiavalent states dari suatu gamestate
+    def get_eq_states(self, state: GameState) -> List[GameState]:
+        eq_states: List[Gamestate] = []
+        # Get mirrored states
+        eq_states.extend(self.get_mirrored_states(state))
+
+        # Get rotated states and its mirrors
+        rot_state = self.get_rotated_state(state)
+        eq_states.extend(self.get_mirrored_states(rot_state))
+
+        # Get corner-equivalent states and its mirrors
+        
+        for corner_state in self.get_corner_states(state):
+            eq_states.extend(self.get_mirrored_states(corner_state))
+            rot_state = self.get_rotated_state(corner_state)
+            eq_states.extend(self.get_mirrored_states(rot_state))
+        
+        return eq_states
+
+    # Mencari mirrored states dari suatu gamestate, horizontal and vertical mirror
+    def get_mirrored_states(self, state: GameState) -> List[GameState]:
+        # Mirror states
+        mirrored_states: List[GameState] = [state]
+        # 1. Horizontal mirror
+        mirrored_states.append(
+            GameState(np.fliplr(state.board_status).copy(), 
+                        np.fliplr(state.col_status).copy(), 
+                        np.fliplr(state.row_status).copy(), 
+                        state.player1_turn)
+        )
+
+        # 2. Vertical Mirror
+        mirrored_states.append(
+            GameState(np.flipud(state.board_status).copy(), 
+                        np.flipud(state.col_status).copy(), 
+                        np.flipud(state.row_status).copy(), 
+                        state.player1_turn)
+        )
+        return mirrored_states
+
+    # Melakukan rotasi terhadap gamestate sebanyak satu kali
+    def get_rotated_state(self, state: GameState) -> GameState:
+        new_board_status = np.rot90(state.board_status)
+        assert(new_board_status.shape == state.board_status.shape)
+        new_row_status = np.rot90(state.col_status)
+        assert(new_row_status.shape == state.row_status.shape)
+        new_col_status = np.rot90(state.row_status)
+        assert(new_col_status.shape == state.col_status.shape)
+        return GameState(new_board_status.copy(), new_row_status.copy(), new_col_status.copy(), state.player1_turn)
+
+    # Mencari corner equivalent states dari suate gamestate
+    def get_corner_states(self, state: GameState) -> List[GameState]:
+        # Swap corners if exist
+        for i in range(16):
+            # TODO: implement this
+            pass
+        return [state]
+
+    # Mengisi tabel dp dengan value yang sudah dihitung
+    def memoize(self, state: GameState, utility: float) -> None:
+        eq_states = self.get_eq_states(state)
+        for state in eq_states:
+            self.dp[self.stringify(state)] = utility
