@@ -114,16 +114,18 @@ class LocalSearchBot(Bot):
         [ny, nx] = new_state.board_status.shape
         utility = 0
 
-        # TODO: Menambahkan heuristik dari teknik chains
+        # TODO: Menambahkan heuristik transposition table (untuk melakukan caching nilai utility) dengan corner symmetry
+
+        # TODO: Menambahkan heuristik dari chain rule
         for y in range(ny):
             for x in range(nx):
                 if self.is_player1:
                     if new_state.board_status[y, x] == -4:
                         utility += 1
-                    elif new_state.board_status[y, x] == 4 or abs(new_state.board_status[y, x]) == 3:
+                    elif new_state.board_status[y, x] == 4:
                         utility -= 1
                 else:
-                    if new_state.board_status[y, x] == -4 or abs(new_state.board_status[y, x]) == 3:
+                    if new_state.board_status[y, x] == -4:
                         utility -= 1
                     elif new_state.board_status[y, x] == 4:
                         utility += 1
