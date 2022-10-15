@@ -114,16 +114,16 @@ class LocalSearchBot(Bot):
         [ny, nx] = new_state.board_status.shape
         utility = 0
 
-        # TODO: Mungkin bisa dicoba dengan fungsi yang lebih mendeskrispsikan kondisi game
+        # TODO: Menambahkan heuristik dari teknik chains
         for y in range(ny):
             for x in range(nx):
                 if self.is_player1:
                     if new_state.board_status[y, x] == -4:
                         utility += 1
-                    elif new_state.board_status[y, x] == 4 or new_state.board_status[y, x] == -3:
+                    elif new_state.board_status[y, x] == 4 or abs(new_state.board_status[y, x]) == 3:
                         utility -= 1
                 else:
-                    if new_state.board_status[y, x] == -4 or new_state.board_status[y, x] == 3:
+                    if new_state.board_status[y, x] == -4 or abs(new_state.board_status[y, x]) == 3:
                         utility -= 1
                     elif new_state.board_status[y, x] == 4:
                         utility += 1

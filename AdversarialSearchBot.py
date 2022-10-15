@@ -26,6 +26,7 @@ class AdversarialSearchBot(Bot):
         col_positions = self.generate_positions(state.col_status)
         actions: List[GameAction] = []
 
+        # TODO: Menambahkan heuristik move ordering
         for position in row_positions:
             actions.append(GameAction("row", position))
         for position in col_positions:
@@ -94,6 +95,8 @@ class AdversarialSearchBot(Bot):
     def get_minimax_value(self, state: GameState, depth: int = 0, alpha: float = -np.inf, beta: float = np.inf) -> float:
         # Udah ketemu solusi tinggal dihitung dengan fungsi objektif
         # Dilakukan pembatasan depth agar tidak terlalu lama
+        # TODO: Menambahkan heuristik transposition table (untuk melakukan caching nilai utility) dengan corner symmetry
+        # TODO: Menambahkan iterative deepening search (untuk menghilangkan kebutuhan max_depth)
         if self.terminal_test(state) or depth == self.max_depth:
             return self.get_utility(state)
 
@@ -136,16 +139,16 @@ class AdversarialSearchBot(Bot):
         [ny, nx] = state.board_status.shape
         utility = 0
 
-        # TODO: Mungkin bisa dicoba dengan fungsi yang lebih mendeskrispsikan kondisi game
+        # TODO: Menambahkan heuristik dari teknik chains
         for y in range(ny):
             for x in range(nx):
                 if self.is_player1:
                     if state.board_status[y, x] == -4:
                         utility += 1
-                    elif state.board_status[y, x] == 4 or state.board_status[y, x] == -3:
+                    elif state.board_status[y, x] == 4 or abs(state.board_status[y, x]) == 3:
                         utility -= 1
                 else:
-                    if state.board_status[y, x] == -4 or state.board_status[y, x] == 3:
+                    if state.board_status[y, x] == -4 or abs(state.board_status[y, x]) == 3:
                         utility -= 1
                     elif state.board_status[y, x] == 4:
                         utility += 1
