@@ -118,13 +118,13 @@ class LocalSearchBot(Bot):
         for y in range(ny):
             for x in range(nx):
                 if self.is_player1:
-                    if new_state.board_status[y, x] == -4 or new_state.board_status[y, x] == 3:
+                    if new_state.board_status[y, x] == -4:
                         utility += 1
                     elif new_state.board_status[y, x] == 4 or new_state.board_status[y, x] == -3:
                         utility -= 1
                 else:
                     if new_state.board_status[y, x] == -4 or new_state.board_status[y, x] == 3:
                         utility -= 1
-                    elif new_state.board_status[y, x] == 4 or new_state.board_status[y, x] == -3:
+                    elif new_state.board_status[y, x] == 4:
                         utility += 1
         return utility

@@ -140,13 +140,13 @@ class AdversarialSearchBot(Bot):
         for y in range(ny):
             for x in range(nx):
                 if self.is_player1:
-                    if state.board_status[y, x] == -4 or state.board_status[y, x] == 3:
+                    if state.board_status[y, x] == -4:
                         utility += 1
                     elif state.board_status[y, x] == 4 or state.board_status[y, x] == -3:
                         utility -= 1
                 else:
                     if state.board_status[y, x] == -4 or state.board_status[y, x] == 3:
                         utility -= 1
-                    elif state.board_status[y, x] == 4 or state.board_status[y, x] == -3:
+                    elif state.board_status[y, x] == 4:
                         utility += 1
         return utility
