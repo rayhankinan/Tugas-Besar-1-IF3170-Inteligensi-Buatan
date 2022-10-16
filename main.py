@@ -12,6 +12,7 @@ from RandomBot import RandomBot
 from LocalSearchBot import LocalSearchBot
 from AdversarialSearchBot import AdversarialSearchBot
 
+# == Tkinter Config
 size_of_board = 600
 number_of_dots = 4
 symbol_size = (size_of_board / 3 - size_of_board / 8) / 2
@@ -337,7 +338,7 @@ class Dots_and_Boxes:
             )
             self.update(valid_input, logical_position)
         else:
-            # Bot related variables
+            # == Bot related variables
             try:
                 is_player1 = getattr(self.bot1, "is_player1")
                 setattr(self.bot1, "is_player1", not is_player1)
@@ -395,7 +396,8 @@ class Dots_and_Boxes:
 
 if __name__ == "__main__":
     game_instance = Dots_and_Boxes(
-        LocalSearchBot(initial_temperature=100, is_player1=True, precision=1e100),
-        AdversarialSearchBot(max_depth=3, is_player1=False),
+        # LocalSearchBot(initial_temperature=100, is_player1=True, precision=1e100),
+        None,
+        AdversarialSearchBot(max_depth=5, is_player1=False),
     )
     game_instance.mainloop()

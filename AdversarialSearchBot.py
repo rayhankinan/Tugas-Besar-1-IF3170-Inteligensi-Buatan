@@ -1,29 +1,34 @@
+from time import perf_counter
 from Bot import Bot
 from GameAction import GameAction
 from GameState import GameState
 from typing import List
 import numpy as np
 
+is_global_time_stop = False
+global_time = 0
+
 
 class AdversarialSearchBot(Bot):
-    # Inisialisasi Variable awal
+
+    # Initialize bot
     def __init__(self, max_depth: int = 5, is_player1: bool = False):
         self.max_depth = max_depth
         self.is_player1 = is_player1
 
-    # Pemilihan aksi yang dilakukan agent
+    # == Implement get action from bot class
     def get_action(self, state: GameState) -> GameAction:
         actions = self.generate_actions(state)
         utilities = np.array(
             [
-                self.get_minimax_value(self.get_result(state, action))
+                self.get_minimax_value(state=self.get_result(state, action))
                 for action in actions
             ]
         )
         index = np.random.choice(np.flatnonzero(utilities == utilities.max()))
         return actions[index]
 
-    # Generate list aksi yang bisa dilakukan
+    # == Generate list of game action
     def generate_actions(self, state: GameState) -> List[GameAction]:
         row_positions = self.generate_positions(state.row_status)
         col_positions = self.generate_positions(state.col_status)
@@ -37,7 +42,7 @@ class AdversarialSearchBot(Bot):
 
         return actions
 
-    # Generate posisi dari setiap garis yang masih kosong
+    # == Generate valid position
     def generate_positions(self, matrix: np.ndarray):
         [ny, nx] = matrix.shape
         positions: List[tuple[int, int]] = []
@@ -49,12 +54,12 @@ class AdversarialSearchBot(Bot):
 
         return positions
 
-    # Update board
+    # == Update board
     def get_result(self, state: GameState, action: GameAction) -> GameState:
         type = action.action_type
         x, y = action.position
 
-        # Dilakukan copy agar tidak mengubah status game
+        # == FIXME
         new_state = GameState(
             state.board_status.copy(),
             state.row_status.copy(),
@@ -67,7 +72,7 @@ class AdversarialSearchBot(Bot):
 
         [ny, nx] = new_state.board_status.shape
 
-        # Pengecekan apakah akan terbentuk box pada move ini
+        # == Check if this move will make a box
         if y < ny and x < nx:
             new_state.board_status[y, x] = (
                 abs(new_state.board_status[y, x]) + val
@@ -75,6 +80,7 @@ class AdversarialSearchBot(Bot):
             if abs(new_state.board_status[y, x]) == 4:
                 is_point_scored = True
 
+        # == modified and check for row statuses
         if type == "row":
             new_state.row_status[y, x] = 1
             if y > 0:
@@ -83,6 +89,8 @@ class AdversarialSearchBot(Bot):
                 ) * player_modifier
                 if abs(new_state.board_status[y - 1, x]) == 4:
                     is_point_scored = True
+
+        # == modified and check for col statuses
         elif type == "col":
             new_state.col_status[y, x] = 1
             if x > 0:
@@ -92,8 +100,6 @@ class AdversarialSearchBot(Bot):
                 if abs(new_state.board_status[y, x - 1]) == 4:
                     is_point_scored = True
 
-        # Jika bot di player 1 maka kita ingin bot mendapatkan point sebesar mungkin maka langkah ini akan diambil
-        # Jika bot berada di player 2 maka kita ingin player 1 tidak mendapatkan poin sehingga kita ingin mengambil aksi dimana player 1 tidak mendapatkan poin
         new_state = new_state._replace(
             player1_turn=not (new_state.player1_turn ^ is_point_scored)
         )
@@ -105,25 +111,44 @@ class AdversarialSearchBot(Bot):
         depth: int = 0,
         alpha: float = -np.inf,
         beta: float = np.inf,
+        is_root: bool = True,
+        current_time=perf_counter(),
     ) -> float:
-        # Udah ketemu solusi tinggal dihitung dengan fungsi objektif
-        # Dilakukan pembatasan depth agar tidak terlalu lama
-        # TODO: Mengganti depth first search menjadi iterative deepening search (untuk menghilangkan kebutuhan max_depth)
+        global is_global_time_stop
+        global global_time
+        if is_root:
+            global_time = perf_counter()
 
-        if self.terminal_test(state) or depth == self.max_depth:
+        time_difference = abs(global_time - current_time)
+
+        if time_difference >= 4.8:
+            is_global_time_stop = True
+
+        if (
+            self.terminal_test(state)
+            or depth == self.max_depth
+            or is_global_time_stop == True
+        ):
+            global_time = 0
+            is_global_time_stop = False
             return self.get_utility(state)
 
         # Jika belum ketemu, maka akan dicari solusinya dengan dfs dengan turn yang bergantian.
         # Jika nilai terbaik dari maximizer sudah sama atau melebihi nilai terbaik dari minimzer (alpha lebih dari sama dengan beta)
         # Pencarian neighbor dapat dihentikan karena dapat dipastikan nilai minimum yang kita cari merupakan langkah optimum musuh
-        elif not (state.player1_turn ^ self.is_player1):
+        if not (state.player1_turn ^ self.is_player1):
             value = -np.inf
             actions = self.generate_actions(state)
             for action in actions:
                 value = max(
                     value,
                     self.get_minimax_value(
-                        self.get_result(state, action), depth + 1, alpha, beta
+                        self.get_result(state, action),
+                        depth + 1,
+                        alpha,
+                        beta,
+                        False,
+                        current_time=perf_counter(),
                     ),
                 )
                 alpha = max(alpha, value)
@@ -137,7 +162,12 @@ class AdversarialSearchBot(Bot):
                 value = min(
                     value,
                     self.get_minimax_value(
-                        self.get_result(state, action), depth + 1, alpha, beta
+                        self.get_result(state, action),
+                        depth + 1,
+                        alpha,
+                        beta,
+                        False,
+                        current_time=perf_counter(),
                     ),
                 )
                 beta = min(beta, value)
@@ -145,7 +175,7 @@ class AdversarialSearchBot(Bot):
                     break
             return value
 
-    # Pengecekan apakah terminal state sudah valid
+    # == Check if terminal leaf has box
     def terminal_test(self, state: GameState) -> bool:
         [ny, nx] = state.board_status.shape
 
@@ -162,7 +192,7 @@ class AdversarialSearchBot(Bot):
 
         # TODO: Menambahkan heuristik transposition table (untuk melakukan caching nilai utility) dengan corner symmetry
 
-        # Menghitung jumlah box yang terbentuk
+        # == Count boxes
         for y in range(ny):
             for x in range(nx):
                 if self.is_player1:
@@ -176,7 +206,7 @@ class AdversarialSearchBot(Bot):
                     elif state.board_status[y, x] == 4:
                         utility += 4
 
-        # Chain rule
+        # == Chain rule
         if self.chain_count(state) % 2 == 0 and self.is_player1:
             utility += 3
         elif self.chain_count(state) % 2 != 0 and not self.is_player1:
@@ -184,11 +214,10 @@ class AdversarialSearchBot(Bot):
 
         return utility
 
-        # Count the number of long chain(s)
-
+    # == Count the number of long chain(s)
     def chain_count(self, state: GameState) -> int:
 
-        chain_count = 0
+        num_of_chain = 0
         chain_list: List[List[int]] = []
 
         for box_num in range(9):
@@ -206,9 +235,9 @@ class AdversarialSearchBot(Bot):
 
         for chain in chain_list:
             if len(chain) >= 3:
-                chain_count += 1
+                num_of_chain += 1
 
-        return chain_count
+        return num_of_chain
 
     # Find adjacent box(es) which can build chain
     def add_chain(self, state: GameState, chain_list: List[List[int]], box_num):
