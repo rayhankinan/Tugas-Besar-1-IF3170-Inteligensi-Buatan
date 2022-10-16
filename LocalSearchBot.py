@@ -83,7 +83,18 @@ class LocalSearchBot(Bot):
             state.col_status.copy(),
             state.player1_turn,
         )
-        player_modifier = -1 if new_state.player1_turn else 1
+        player_modifier = 0
+        if new_state.player1_turn:
+            if self.is_player1:
+                player_modifier = -1
+            else:
+                player_modifier = 1
+        else:
+            if self.is_player1:
+                player_modifier = -1
+            else:
+                player_modifier = 1
+
         is_point_scored = False
         val = 1
 
