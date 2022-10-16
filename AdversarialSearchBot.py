@@ -14,9 +14,12 @@ class AdversarialSearchBot(Bot):
     # Pemilihan aksi yang dilakukan agent
     def get_action(self, state: GameState) -> GameAction:
         actions = self.generate_actions(state)
-        utilities = np.array([
-            self.get_minimax_value(self.get_result(state, action)) for action in actions
-        ])
+        utilities = np.array(
+            [
+                self.get_minimax_value(self.get_result(state, action))
+                for action in actions
+            ]
+        )
         index = np.random.choice(np.flatnonzero(utilities == utilities.max()))
         return actions[index]
 
@@ -35,7 +38,7 @@ class AdversarialSearchBot(Bot):
         return actions
 
     # Generate posisi dari setiap garis yang masih kosong
-    def generate_positions(self, matrix: np.ndarray) -> List[tuple[int, int]]:
+    def generate_positions(self, matrix: np.ndarray):
         [ny, nx] = matrix.shape
         positions: List[tuple[int, int]] = []
 
@@ -56,7 +59,7 @@ class AdversarialSearchBot(Bot):
             state.board_status.copy(),
             state.row_status.copy(),
             state.col_status.copy(),
-            state.player1_turn
+            state.player1_turn,
         )
         player_modifier = -1 if new_state.player1_turn else 1
         is_point_scored = False
@@ -67,7 +70,8 @@ class AdversarialSearchBot(Bot):
         # Pengecekan apakah akan terbentuk box pada move ini
         if y < ny and x < nx:
             new_state.board_status[y, x] = (
-                abs(new_state.board_status[y, x]) + val) * player_modifier
+                abs(new_state.board_status[y, x]) + val
+            ) * player_modifier
             if abs(new_state.board_status[y, x]) == 4:
                 is_point_scored = True
 
@@ -75,24 +79,33 @@ class AdversarialSearchBot(Bot):
             new_state.row_status[y, x] = 1
             if y > 0:
                 new_state.board_status[y - 1, x] = (
-                    abs(new_state.board_status[y - 1, x]) + val) * player_modifier
+                    abs(new_state.board_status[y - 1, x]) + val
+                ) * player_modifier
                 if abs(new_state.board_status[y - 1, x]) == 4:
                     is_point_scored = True
         elif type == "col":
             new_state.col_status[y, x] = 1
             if x > 0:
                 new_state.board_status[y, x - 1] = (
-                    abs(new_state.board_status[y, x - 1]) + val) * player_modifier
+                    abs(new_state.board_status[y, x - 1]) + val
+                ) * player_modifier
                 if abs(new_state.board_status[y, x - 1]) == 4:
                     is_point_scored = True
 
         # Jika bot di player 1 maka kita ingin bot mendapatkan point sebesar mungkin maka langkah ini akan diambil
         # Jika bot berada di player 2 maka kita ingin player 1 tidak mendapatkan poin sehingga kita ingin mengambil aksi dimana player 1 tidak mendapatkan poin
-        new_state = new_state._replace(player1_turn=not (
-            new_state.player1_turn ^ is_point_scored))
+        new_state = new_state._replace(
+            player1_turn=not (new_state.player1_turn ^ is_point_scored)
+        )
         return new_state
 
-    def get_minimax_value(self, state: GameState, depth: int = 0, alpha: float = -np.inf, beta: float = np.inf) -> float:
+    def get_minimax_value(
+        self,
+        state: GameState,
+        depth: int = 0,
+        alpha: float = -np.inf,
+        beta: float = np.inf,
+    ) -> float:
         # Udah ketemu solusi tinggal dihitung dengan fungsi objektif
         # Dilakukan pembatasan depth agar tidak terlalu lama
         # TODO: Mengganti depth first search menjadi iterative deepening search (untuk menghilangkan kebutuhan max_depth)
@@ -107,8 +120,12 @@ class AdversarialSearchBot(Bot):
             value = -np.inf
             actions = self.generate_actions(state)
             for action in actions:
-                value = max(value, self.get_minimax_value(
-                    self.get_result(state, action), depth + 1, alpha, beta))
+                value = max(
+                    value,
+                    self.get_minimax_value(
+                        self.get_result(state, action), depth + 1, alpha, beta
+                    ),
+                )
                 alpha = max(alpha, value)
                 if beta <= alpha:
                     break
@@ -117,8 +134,12 @@ class AdversarialSearchBot(Bot):
             value = np.inf
             actions = self.generate_actions(state)
             for action in actions:
-                value = min(value, self.get_minimax_value(
-                    self.get_result(state, action), depth + 1, alpha, beta))
+                value = min(
+                    value,
+                    self.get_minimax_value(
+                        self.get_result(state, action), depth + 1, alpha, beta
+                    ),
+                )
                 beta = min(beta, value)
                 if beta <= alpha:
                     break
@@ -164,6 +185,7 @@ class AdversarialSearchBot(Bot):
         return utility
 
         # Count the number of long chain(s)
+
     def chain_count(self, state: GameState) -> int:
 
         chain_count = 0
@@ -191,17 +213,14 @@ class AdversarialSearchBot(Bot):
     # Find adjacent box(es) which can build chain
     def add_chain(self, state: GameState, chain_list: List[List[int]], box_num):
 
-        neighbors_num = [
-            box_num - 1,
-            box_num - 3,
-            box_num + 1,
-            box_num + 3
-        ]
+        neighbors_num = [box_num - 1, box_num - 3, box_num + 1, box_num + 3]
 
         for idx in range(len(neighbors_num)):
-            if neighbors_num[idx] < 0 or \
-                    neighbors_num[idx] > 8 or \
-                    (idx % 2 == 0 and neighbors_num[idx]//3 != box_num//3):
+            if (
+                neighbors_num[idx] < 0
+                or neighbors_num[idx] > 8
+                or (idx % 2 == 0 and neighbors_num[idx] // 3 != box_num // 3)
+            ):
                 continue
 
             flag = False

@@ -27,7 +27,7 @@ class RandomBot(Bot):
         position = self.get_random_position_with_zero_value(state.row_status)
         return GameAction("row", position)
 
-    def get_random_position_with_zero_value(self, matrix: np.ndarray) -> tuple[int, int]:
+    def get_random_position_with_zero_value(self, matrix: np.ndarray):
         [ny, nx] = matrix.shape
 
         x = -1
