@@ -24,8 +24,15 @@ class AdversarialSearchBot(Bot):
                 for action in actions
             ]
         )
-        index = np.random.choice(np.flatnonzero(utilities == utilities.max()))
-        return actions[index]
+
+        if self.is_player1:
+            index = np.random.choice(
+                np.flatnonzero(utilities == utilities.max()))
+            return actions[index]
+        else:
+            index = np.random.choice(
+                np.flatnonzero(utilities == utilities.min()))
+            return actions[index]
 
     # == Generate list of game action
     def generate_actions(self, state: GameState) -> List[GameAction]:
@@ -66,17 +73,7 @@ class AdversarialSearchBot(Bot):
             state.player1_turn,
         )
 
-        player_modifier = 0
-        if new_state.player1_turn:
-            if self.is_player1:
-                player_modifier = -1
-            else:
-                player_modifier = 1
-        else:
-            if self.is_player1:
-                player_modifier = -1
-            else:
-                player_modifier = 1
+        player_modifier = -1 if new_state.player1_turn else 1
 
         is_point_scored = False
         val = 1
@@ -125,21 +122,21 @@ class AdversarialSearchBot(Bot):
         is_root: bool = True,
         current_time=perf_counter(),
     ) -> float:
-        if is_root:
-            self.global_time = perf_counter()
+        # if is_root:
+        #     self.global_time = perf_counter()
 
-        time_difference = abs(self.global_time - current_time)
+        # time_difference = abs(self.global_time - current_time)
 
-        if time_difference >= 4.8:
-            self.is_global_time_stop = True
+        # if time_difference >= 4.8:
+        #     self.is_global_time_stop = True
 
         if (
             self.terminal_test(state)
             or depth == self.max_depth
-            or self.is_global_time_stop == True
+            # or self.is_global_time_stop
         ):
-            self.global_time = 0
-            self.is_global_time_stop = False
+            # self.global_time = 0
+            # self.is_global_time_stop = False
             return self.get_utility(state)
 
         # Jika belum ketemu, maka akan dicari solusinya dengan dfs dengan turn yang bergantian.
@@ -216,10 +213,10 @@ class AdversarialSearchBot(Bot):
                         utility += 1
 
         # == Chain rule
-        if self.chain_count(state) % 2 == 0 and self.is_player1:
-            utility += 3
-        elif self.chain_count(state) % 2 != 0 and not self.is_player1:
-            utility += 3
+        # if self.chain_count(state) % 2 == 0 and self.is_player1:
+        #     utility += 3
+        # elif self.chain_count(state) % 2 != 0 and not self.is_player1:
+        #     utility += 3
 
         return utility
 

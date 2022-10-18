@@ -38,7 +38,8 @@ class Dots_and_Boxes:
     def __init__(self, bot1: Optional[Bot] = None, bot2: Optional[Bot] = None):
         self.window = Tk()
         self.window.title("Dots_and_Boxes")
-        self.canvas = Canvas(self.window, width=size_of_board, height=size_of_board)
+        self.canvas = Canvas(
+            self.window, width=size_of_board, height=size_of_board)
         self.canvas.pack()
         self.player1_starts = True
         self.refresh_board()
@@ -49,7 +50,8 @@ class Dots_and_Boxes:
 
     def play_again(self):
         self.refresh_board()
-        self.board_status = np.zeros(shape=(number_of_dots - 1, number_of_dots - 1))
+        self.board_status = np.zeros(
+            shape=(number_of_dots - 1, number_of_dots - 1))
         self.row_status = np.zeros(shape=(number_of_dots, number_of_dots - 1))
         self.col_status = np.zeros(shape=(number_of_dots - 1, number_of_dots))
         self.pointsScored = False
@@ -169,20 +171,24 @@ class Dots_and_Boxes:
     def make_edge(self, type, logical_position):
         if type == "row":
             start_x = (
-                distance_between_dots / 2 + logical_position[0] * distance_between_dots
+                distance_between_dots / 2 +
+                logical_position[0] * distance_between_dots
             )
             end_x = start_x + distance_between_dots
             start_y = (
-                distance_between_dots / 2 + logical_position[1] * distance_between_dots
+                distance_between_dots / 2 +
+                logical_position[1] * distance_between_dots
             )
             end_y = start_y
         elif type == "col":
             start_y = (
-                distance_between_dots / 2 + logical_position[1] * distance_between_dots
+                distance_between_dots / 2 +
+                logical_position[1] * distance_between_dots
             )
             end_y = start_y + distance_between_dots
             start_x = (
-                distance_between_dots / 2 + logical_position[0] * distance_between_dots
+                distance_between_dots / 2 +
+                logical_position[0] * distance_between_dots
             )
             end_x = start_x
 
@@ -301,10 +307,12 @@ class Dots_and_Boxes:
 
     def shade_box(self, box, color):
         start_x = (
-            distance_between_dots / 2 + box[1] * distance_between_dots + edge_width / 2
+            distance_between_dots / 2 + box[1] *
+            distance_between_dots + edge_width / 2
         )
         start_y = (
-            distance_between_dots / 2 + box[0] * distance_between_dots + edge_width / 2
+            distance_between_dots / 2 + box[0] *
+            distance_between_dots + edge_width / 2
         )
         end_x = start_x + distance_between_dots - edge_width
         end_y = start_y + distance_between_dots - edge_width
@@ -396,8 +404,7 @@ class Dots_and_Boxes:
 
 if __name__ == "__main__":
     game_instance = Dots_and_Boxes(
-        LocalSearchBot(initial_temperature=0, is_player1=True, precision=1e-100),
-        # AdversarialSearchBot(max_depth=5, is_player1=True),
-        AdversarialSearchBot(max_depth=5, is_player1=False),
+        AdversarialSearchBot(max_depth=3, is_player1=True),
+        None
     )
     game_instance.mainloop()
