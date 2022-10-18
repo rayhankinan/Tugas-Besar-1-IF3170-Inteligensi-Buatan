@@ -18,17 +18,25 @@ class AdversarialSearchBot(Bot):
     # == Implement get action from bot class
     def get_action(self, state: GameState) -> GameAction:
         self.is_player1 = state.player1_turn
-        print(self.is_player1)
 
-        actions = self.generate_actions(state)
-        utilities = np.array(
-            [
-                self.get_minimax_value(state=self.get_result(state, action))
-                for action in actions
-            ]
-        )
-        index = np.random.choice(np.flatnonzero(utilities == utilities.max()))
-        return actions[index]
+        selected_action: GameAction = None
+        for N in range(1, self.max_depth + 1):
+            print(N)
+            actions = self.generate_actions(state)
+            utilities = np.array(
+                [
+                    self.get_minimax_value(
+                        state=self.get_result(state, action), max_depth=N)
+                    for action in actions
+                ]
+            )
+            index = np.random.choice(
+                np.flatnonzero(utilities == utilities.max()))
+            selected_action = actions[index]
+
+            # IF TIME LIMIT THEN BREAK
+
+        return selected_action
 
     # == Generate list of game action
     def generate_actions(self, state: GameState) -> List[GameAction]:
@@ -114,6 +122,7 @@ class AdversarialSearchBot(Bot):
         self,
         state: GameState,
         depth: int = 0,
+        max_depth: int = 0,
         alpha: float = -np.inf,
         beta: float = np.inf,
         # is_root: bool = True,
@@ -129,7 +138,7 @@ class AdversarialSearchBot(Bot):
 
         if (
             self.terminal_test(state)
-            or depth == self.max_depth
+            or depth == max_depth
             # or self.is_global_time_stop
         ):
             # self.global_time = 0
@@ -210,10 +219,10 @@ class AdversarialSearchBot(Bot):
                         utility += 1
 
         # == Chain rule
-        if self.chain_count(state) % 2 == 0 and self.is_player1:
-            utility += 3
-        elif self.chain_count(state) % 2 != 0 and not self.is_player1:
-            utility += 3
+        # if self.chain_count(state) % 2 == 0 and self.is_player1:
+        #     utility += 3
+        # elif self.chain_count(state) % 2 != 0 and not self.is_player1:
+        #     utility += 3
 
         return utility
 
