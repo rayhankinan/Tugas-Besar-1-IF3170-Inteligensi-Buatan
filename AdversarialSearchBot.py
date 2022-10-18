@@ -5,9 +5,6 @@ from GameState import GameState
 from typing import List
 import numpy as np
 
-is_global_time_stop = False
-global_time = 0
-
 
 class AdversarialSearchBot(Bot):
 
@@ -15,6 +12,8 @@ class AdversarialSearchBot(Bot):
     def __init__(self, max_depth: int = 5, is_player1: bool = False):
         self.max_depth = max_depth
         self.is_player1 = is_player1
+        self.is_global_time_stop = False
+        self.global_time = 0
 
     # == Implement get action from bot class
     def get_action(self, state: GameState) -> GameAction:
@@ -126,23 +125,21 @@ class AdversarialSearchBot(Bot):
         is_root: bool = True,
         current_time=perf_counter(),
     ) -> float:
-        global is_global_time_stop
-        global global_time
         if is_root:
-            global_time = perf_counter()
+            self.global_time = perf_counter()
 
-        time_difference = abs(global_time - current_time)
+        time_difference = abs(self.global_time - current_time)
 
         if time_difference >= 4.8:
-            is_global_time_stop = True
+            self.is_global_time_stop = True
 
         if (
             self.terminal_test(state)
             or depth == self.max_depth
-            or is_global_time_stop == True
+            or self.is_global_time_stop == True
         ):
-            global_time = 0
-            is_global_time_stop = False
+            self.global_time = 0
+            self.is_global_time_stop = False
             return self.get_utility(state)
 
         # Jika belum ketemu, maka akan dicari solusinya dengan dfs dengan turn yang bergantian.
@@ -209,14 +206,14 @@ class AdversarialSearchBot(Bot):
             for x in range(nx):
                 if self.is_player1:
                     if state.board_status[y, x] == -4:
-                        utility += 4
+                        utility += 1
                     elif state.board_status[y, x] == 4:
-                        utility -= 4
+                        utility -= 1
                 else:
                     if state.board_status[y, x] == -4:
-                        utility -= 4
+                        utility -= 1
                     elif state.board_status[y, x] == 4:
-                        utility += 4
+                        utility += 1
 
         # == Chain rule
         if self.chain_count(state) % 2 == 0 and self.is_player1:

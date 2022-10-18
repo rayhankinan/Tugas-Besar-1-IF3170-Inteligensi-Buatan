@@ -32,7 +32,8 @@ class LocalSearchBot(Bot):
                 break
 
             next = self.get_random_action(state)
-            delta = self.get_value(state, next) - self.get_value(state, current)
+            delta = self.get_value(state, next) - \
+                self.get_value(state, current)
 
             # Jika delta positif atau tolerable maka ambil langkah selanjutnya
             if delta > 0 or random.random() < math.e ** (delta / current_temperature):
@@ -146,14 +147,14 @@ class LocalSearchBot(Bot):
             for x in range(nx):
                 if self.is_player1:
                     if new_state.board_status[y, x] == -4:
-                        utility += 4
+                        utility += 1
                     elif new_state.board_status[y, x] == 4:
-                        utility -= 4
+                        utility -= 1
                 else:
                     if new_state.board_status[y, x] == -4:
-                        utility -= 4
+                        utility -= 1
                     elif new_state.board_status[y, x] == 4:
-                        utility += 4
+                        utility += 1
 
         # Chain rule
         if self.chain_count(new_state) % 2 == 0 and self.is_player1:
