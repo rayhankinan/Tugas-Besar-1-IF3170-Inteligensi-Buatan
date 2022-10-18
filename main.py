@@ -346,18 +346,6 @@ class Dots_and_Boxes:
             )
             self.update(valid_input, logical_position)
         else:
-            # == Bot related variables
-            try:
-                is_player1 = getattr(self.bot1, "is_player1")
-                setattr(self.bot1, "is_player1", not is_player1)
-            except AttributeError:
-                pass
-            try:
-                is_player1 = getattr(self.bot2, "is_player1")
-                setattr(self.bot2, "is_player1", not is_player1)
-            except AttributeError:
-                pass
-
             self.canvas.delete("all")
             self.play_again()
             self.reset_board = False
@@ -404,7 +392,7 @@ class Dots_and_Boxes:
 
 if __name__ == "__main__":
     game_instance = Dots_and_Boxes(
-        AdversarialSearchBot(max_depth=3, is_player1=True),
-        None
+        None,
+        LocalSearchBot()
     )
     game_instance.mainloop()

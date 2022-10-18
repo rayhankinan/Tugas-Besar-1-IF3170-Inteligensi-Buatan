@@ -12,17 +12,18 @@ class LocalSearchBot(Bot):
     def __init__(
         self,
         initial_temperature: float = 0,
-        schedule: Callable[[int], float] = lambda t: math.e ** (-t / 10),
-        precision: float = 1e-300,
-        is_player1: bool = False,
+        schedule: Callable[[int], float] = lambda t: math.e ** (-t / 100),
+        precision: float = 1e-100,
     ) -> None:
         self.initial_temperature = initial_temperature
         self.schedule = schedule
         self.precision = precision
-        self.is_player1 = is_player1
+        self.is_player1 = True
 
     # Pemilihan aksi yang akan dilakukan agent
     def get_action(self, state: GameState) -> GameAction:
+        self.is_player1 = state.player1_turn
+
         current = self.get_random_action(state)
         time = 1
         while True:
@@ -137,10 +138,10 @@ class LocalSearchBot(Bot):
                 if self.is_player1:
                     if new_state.board_status[y, x] == -4:
                         utility += 1
-                    elif new_state.board_status[y, x] == 4:
+                    elif new_state.board_status[y, x] == 4 or abs(new_state.board_status[y, x]) == 3:
                         utility -= 1
                 else:
-                    if new_state.board_status[y, x] == -4:
+                    if new_state.board_status[y, x] == -4 or abs(new_state.board_status[y, x]) == 3:
                         utility -= 1
                     elif new_state.board_status[y, x] == 4:
                         utility += 1

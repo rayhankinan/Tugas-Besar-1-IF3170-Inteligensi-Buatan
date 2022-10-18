@@ -9,14 +9,17 @@ import numpy as np
 class AdversarialSearchBot(Bot):
 
     # Initialize bot
-    def __init__(self, max_depth: int = 5, is_player1: bool = False):
+    def __init__(self, max_depth: int = 5):
         self.max_depth = max_depth
-        self.is_player1 = is_player1
+        self.is_player1 = True
         self.is_global_time_stop = False
         self.global_time = 0
 
     # == Implement get action from bot class
     def get_action(self, state: GameState) -> GameAction:
+        self.is_player1 = state.player1_turn
+        print(self.is_player1)
+
         actions = self.generate_actions(state)
         utilities = np.array(
             [
@@ -24,15 +27,8 @@ class AdversarialSearchBot(Bot):
                 for action in actions
             ]
         )
-
-        if self.is_player1:
-            index = np.random.choice(
-                np.flatnonzero(utilities == utilities.max()))
-            return actions[index]
-        else:
-            index = np.random.choice(
-                np.flatnonzero(utilities == utilities.min()))
-            return actions[index]
+        index = np.random.choice(np.flatnonzero(utilities == utilities.max()))
+        return actions[index]
 
     # == Generate list of game action
     def generate_actions(self, state: GameState) -> List[GameAction]:
@@ -111,6 +107,7 @@ class AdversarialSearchBot(Bot):
         new_state = new_state._replace(
             player1_turn=not (new_state.player1_turn ^ is_point_scored)
         )
+
         return new_state
 
     def get_minimax_value(
@@ -119,8 +116,8 @@ class AdversarialSearchBot(Bot):
         depth: int = 0,
         alpha: float = -np.inf,
         beta: float = np.inf,
-        is_root: bool = True,
-        current_time=perf_counter(),
+        # is_root: bool = True,
+        # current_time=perf_counter(),
     ) -> float:
         # if is_root:
         #     self.global_time = perf_counter()
@@ -142,7 +139,7 @@ class AdversarialSearchBot(Bot):
         # Jika belum ketemu, maka akan dicari solusinya dengan dfs dengan turn yang bergantian.
         # Jika nilai terbaik dari maximizer sudah sama atau melebihi nilai terbaik dari minimzer (alpha lebih dari sama dengan beta)
         # Pencarian neighbor dapat dihentikan karena dapat dipastikan nilai minimum yang kita cari merupakan langkah optimum musuh
-        if not (state.player1_turn ^ self.is_player1):
+        if self.is_player1 == state.player1_turn:
             value = -np.inf
             actions = self.generate_actions(state)
             for action in actions:
@@ -153,8 +150,8 @@ class AdversarialSearchBot(Bot):
                         depth + 1,
                         alpha,
                         beta,
-                        False,
-                        current_time=perf_counter(),
+                        # False,
+                        # current_time=perf_counter(),
                     ),
                 )
                 alpha = max(alpha, value)
@@ -172,8 +169,8 @@ class AdversarialSearchBot(Bot):
                         depth + 1,
                         alpha,
                         beta,
-                        False,
-                        current_time=perf_counter(),
+                        # False,
+                        # current_time=perf_counter(),
                     ),
                 )
                 beta = min(beta, value)
@@ -213,10 +210,10 @@ class AdversarialSearchBot(Bot):
                         utility += 1
 
         # == Chain rule
-        # if self.chain_count(state) % 2 == 0 and self.is_player1:
-        #     utility += 3
-        # elif self.chain_count(state) % 2 != 0 and not self.is_player1:
-        #     utility += 3
+        if self.chain_count(state) % 2 == 0 and self.is_player1:
+            utility += 3
+        elif self.chain_count(state) % 2 != 0 and not self.is_player1:
+            utility += 3
 
         return utility
 
