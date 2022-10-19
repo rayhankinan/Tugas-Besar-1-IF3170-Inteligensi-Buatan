@@ -21,18 +21,14 @@ class AdversarialSearchBot(Bot):
 
         selected_action: GameAction = None
         for N in range(1, self.max_depth + 1):
-            print(N)
             actions = self.generate_actions(state)
-            utilities = np.array(
-                [
-                    self.get_minimax_value(
-                        state=self.get_result(state, action), max_depth=N)
-                    for action in actions
-                ]
-            )
+            utilities = np.array([self.get_minimax_value(
+                state=self.get_result(state, action), max_depth=N) for action in actions])
             index = np.random.choice(
                 np.flatnonzero(utilities == utilities.max()))
             selected_action = actions[index]
+
+            print(utilities)
 
             # IF TIME LIMIT THEN BREAK
 
@@ -124,29 +120,13 @@ class AdversarialSearchBot(Bot):
         depth: int = 0,
         max_depth: int = 0,
         alpha: float = -np.inf,
-        beta: float = np.inf,
-        # is_root: bool = True,
-        # current_time=perf_counter(),
+        beta: float = np.inf
     ) -> float:
-        # if is_root:
-        #     self.global_time = perf_counter()
-
-        # time_difference = abs(self.global_time - current_time)
-
-        # if time_difference >= 4.8:
-        #     self.is_global_time_stop = True
-
-        if (
-            self.terminal_test(state)
-            or depth == max_depth
-            # or self.is_global_time_stop
-        ):
-            # self.global_time = 0
-            # self.is_global_time_stop = False
+        if self.terminal_test(state) or depth == max_depth:
             return self.get_utility(state)
 
         # Jika belum ketemu, maka akan dicari solusinya dengan dfs dengan turn yang bergantian.
-        # Jika nilai terbaik dari maximizer sudah sama atau melebihi nilai terbaik dari minimzer (alpha lebih dari sama dengan beta)
+        # Jika nilai terbaik dari maximizer sudah sama atau melebihi nilai terbaik dari minimizer (alpha lebih dari sama dengan beta)
         # Pencarian neighbor dapat dihentikan karena dapat dipastikan nilai minimum yang kita cari merupakan langkah optimum musuh
         if self.is_player1 == state.player1_turn:
             value = -np.inf
@@ -156,11 +136,10 @@ class AdversarialSearchBot(Bot):
                     value,
                     self.get_minimax_value(
                         self.get_result(state, action),
-                        depth + 1,
-                        alpha,
-                        beta,
-                        # False,
-                        # current_time=perf_counter(),
+                        depth=depth + 1,
+                        max_depth=max_depth,
+                        alpha=alpha,
+                        beta=beta
                     ),
                 )
                 alpha = max(alpha, value)
@@ -175,11 +154,10 @@ class AdversarialSearchBot(Bot):
                     value,
                     self.get_minimax_value(
                         self.get_result(state, action),
-                        depth + 1,
-                        alpha,
-                        beta,
-                        # False,
-                        # current_time=perf_counter(),
+                        depth=depth + 1,
+                        max_depth=max_depth,
+                        alpha=alpha,
+                        beta=beta
                     ),
                 )
                 beta = min(beta, value)
