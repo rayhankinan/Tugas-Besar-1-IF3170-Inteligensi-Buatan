@@ -7,7 +7,7 @@ import random
 import math
 import numpy as np
 
-TIMEOUT = 4.75
+TIMEOUT = 2.5
 
 
 class LocalSearchBot(Bot):

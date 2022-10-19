@@ -5,7 +5,7 @@ from GameState import GameState
 from typing import List
 import numpy as np
 
-TIMEOUT = 4.75
+TIMEOUT = 2.5
 
 
 class AdversarialSearchBot(Bot):
@@ -23,20 +23,21 @@ class AdversarialSearchBot(Bot):
         selected_action: GameAction = None
         timeout = time() + TIMEOUT
 
-        N = 1
-        while True:
+        row_not_filled = np.count_nonzero(state.row_status == 0)
+        column_not_filled = np.count_nonzero(state.col_status == 0)
+        for i in range(row_not_filled + column_not_filled):
             if time() >= timeout:
+                print(time() - timeout)
                 break
 
             actions = self.generate_actions(state)
             utilities = np.array([self.get_minimax_value(
-                state=self.get_result(state, action), max_depth=N) for action in actions])
+                state=self.get_result(state, action), max_depth=i + 1) for action in actions])
             index = np.random.choice(
                 np.flatnonzero(utilities == utilities.max()))
             selected_action = actions[index]
 
-            print(N, utilities)
-            N += 1
+            print(i + 1, utilities)
 
         return selected_action
 
