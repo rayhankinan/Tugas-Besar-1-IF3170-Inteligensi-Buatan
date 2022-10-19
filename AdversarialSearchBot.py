@@ -1,14 +1,16 @@
-from time import perf_counter
+from time import perf_counter, time
 from Bot import Bot
 from GameAction import GameAction
 from GameState import GameState
 from typing import List
 import numpy as np
 
+TIMEOUT = 4.7
+
 
 class AdversarialSearchBot(Bot):
 
-    # Initialize bot
+    # == Initialize bot
     def __init__(self, max_depth: int = 5):
         self.max_depth = max_depth
         self.is_player1 = True
@@ -20,17 +22,18 @@ class AdversarialSearchBot(Bot):
         self.is_player1 = state.player1_turn
 
         selected_action: GameAction = None
+        Timeout = time() + TIMEOUT
         for N in range(1, self.max_depth + 1):
+
+            if time() >= Timeout:
+                break
+
             actions = self.generate_actions(state)
             utilities = np.array([self.get_minimax_value(
                 state=self.get_result(state, action), max_depth=N) for action in actions])
             index = np.random.choice(
                 np.flatnonzero(utilities == utilities.max()))
             selected_action = actions[index]
-
-            print(utilities)
-
-            # IF TIME LIMIT THEN BREAK
 
         return selected_action
 
@@ -65,7 +68,6 @@ class AdversarialSearchBot(Bot):
         type = action.action_type
         x, y = action.position
 
-        # == FIXME
         new_state = GameState(
             state.board_status.copy(),
             state.row_status.copy(),
@@ -120,9 +122,22 @@ class AdversarialSearchBot(Bot):
         depth: int = 0,
         max_depth: int = 0,
         alpha: float = -np.inf,
-        beta: float = np.inf
+        beta: float = np.inf,
+        is_root: bool = True,
     ) -> float:
-        if self.terminal_test(state) or depth == max_depth:
+        if is_root:
+            self.global_time = time() + TIMEOUT
+
+        if time() >= self.global_time:
+            self.is_global_time_stop = True
+
+        if (
+            self.terminal_test(state)
+            or depth == max_depth
+            or self.is_global_time_stop
+        ):
+            self.global_time = 0
+            self.is_global_time_stop = False
             return self.get_utility(state)
 
         # Jika belum ketemu, maka akan dicari solusinya dengan dfs dengan turn yang bergantian.
@@ -183,24 +198,45 @@ class AdversarialSearchBot(Bot):
         # TODO: Menambahkan heuristik transposition table (untuk melakukan caching nilai utility) dengan corner symmetry
 
         # == Count boxes
-        for y in range(ny):
-            for x in range(nx):
-                if self.is_player1:
-                    if state.board_status[y, x] == -4:
-                        utility += 1
-                    elif state.board_status[y, x] == 4:
-                        utility -= 1
-                else:
-                    if state.board_status[y, x] == -4:
-                        utility -= 1
-                    elif state.board_status[y, x] == 4:
-                        utility += 1
+        # for y in range(ny):
+        #     for x in range(nx):
+        #         if self.is_player1:
+        #             if state.board_status[y, x] == -4:
+        #                 utility += 1
+        #             elif state.board_status[y, x] == 4:
+        #                 utility -= 1
+        #         else:
+        #             if state.board_status[y, x] == -4:
+        #                 utility -= 1
+        #             elif state.board_status[y, x] == 4:
+        #                 utility += 1
 
-        # == Chain rule
+        # # == Chain rule
         # if self.chain_count(state) % 2 == 0 and self.is_player1:
         #     utility += 3
         # elif self.chain_count(state) % 2 != 0 and not self.is_player1:
         #     utility += 3
+
+        # == Gare test
+        for y in range(ny):
+            for x in range(nx):
+                if abs(state.board_status[y, x]) == 4:
+                    utility += 1
+
+        # == Chain rule
+        if self.chain_count(state) % 2 == 0 and self.is_player1:
+            utility += 3
+        elif self.chain_count(state) % 2 != 0 and not self.is_player1:
+            utility += 3
+
+        if self.is_gameover(state):
+            utility += 999
+
+        # == if it's our turn then add utility else make it minus
+        if self.is_player1 == state.player1_turn:
+            utility = utility
+        else:
+            utility *= -1
 
         return utility
 
@@ -229,7 +265,7 @@ class AdversarialSearchBot(Bot):
 
         return num_of_chain
 
-    # Find adjacent box(es) which can build chain
+    # == Find adjacent box(es) which can build chain
     def add_chain(self, state: GameState, chain_list: List[List[int]], box_num):
 
         neighbors_num = [box_num - 1, box_num - 3, box_num + 1, box_num + 3]
@@ -259,3 +295,6 @@ class AdversarialSearchBot(Bot):
                 if not state.row_status[reference // 3][reference % 3]:
                     chain_list[-1].append(neighbors_num[idx])
                     self.add_chain(state, chain_list, neighbors_num[idx])
+
+    def is_gameover(self, state: GameState):
+        return (state.row_status == 1).all() and (state.col_status == 1).all()

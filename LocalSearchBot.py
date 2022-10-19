@@ -1,3 +1,4 @@
+from time import time
 from Bot import Bot
 from GameAction import GameAction
 from GameState import GameState
@@ -5,7 +6,7 @@ from typing import List, Callable
 import random
 import math
 import numpy as np
-
+TIMEOUT = 4.7
 
 class LocalSearchBot(Bot):
     # Inisialisasi Variable awal
@@ -26,10 +27,11 @@ class LocalSearchBot(Bot):
 
         current = self.get_random_action(state)
         time = 1
+        Timeout = time() + TIMEOUT
         while True:
             # Perhitungan delta dengan presisi 1e-300
             current_temperature = self.schedule(time)
-            if abs(current_temperature - self.initial_temperature) <= self.precision:
+            if abs(current_temperature - self.initial_temperature) <= self.precision or time() >= Timeout:
                 break
 
             next = self.get_random_action(state)
@@ -147,10 +149,10 @@ class LocalSearchBot(Bot):
                         utility += 1
 
         # Chain rule
-        # if self.chain_count(new_state) % 2 == 0 and self.is_player1:
-        #     utility += 3
-        # elif self.chain_count(new_state) % 2 != 0 and not self.is_player1:
-        #     utility += 3
+        if self.chain_count(new_state) % 2 == 0 and self.is_player1:
+            utility += 3
+        elif self.chain_count(new_state) % 2 != 0 and not self.is_player1:
+            utility += 3
 
         return utility
 
