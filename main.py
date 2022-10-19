@@ -9,10 +9,11 @@ from Bot import Bot
 from typing import Optional
 from GameState import GameState
 from RandomBot import RandomBot
-from LocalSearchBot import LocalSearchBot
 from AdversarialSearchBot import AdversarialSearchBot
 from AdversarialSearchBotWithChaining import AdversarialSearchBotWithChaining
 from AdversarialSearchBotWithGareTest import AdversarialSearchBotWithGareTest
+from LocalSearchBot import LocalSearchBot
+from LocalSearchBotWithChaining import LocalSearchBotWithChaining
 
 # == Tkinter Config
 size_of_board = 600
@@ -396,6 +397,6 @@ if __name__ == "__main__":
         # AdversarialSearchBotWithChaining(),
         # AdversarialSearchBotWithGareTest(),
         None,
-        LocalSearchBot()
+        LocalSearchBotWithChaining()
     )
     game_instance.mainloop()
