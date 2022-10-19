@@ -5,7 +5,7 @@ from GameState import GameState
 from typing import List
 import numpy as np
 
-TIMEOUT = 2.5
+TIMEOUT = 4.7
 
 
 class AdversarialSearchBot(Bot):
@@ -13,7 +13,6 @@ class AdversarialSearchBot(Bot):
     # == Initialize bot
     def __init__(self):
         self.is_player1 = True
-        self.is_global_time_stop = False
         self.global_time = 0
 
     # == Implement get action from bot class
@@ -21,12 +20,12 @@ class AdversarialSearchBot(Bot):
         self.is_player1 = state.player1_turn
 
         selected_action: GameAction = None
-        timeout = time() + TIMEOUT
+        self.global_time = time() + TIMEOUT
 
         row_not_filled = np.count_nonzero(state.row_status == 0)
         column_not_filled = np.count_nonzero(state.col_status == 0)
         for i in range(row_not_filled + column_not_filled):
-            if time() >= timeout:
+            if time() >= self.global_time:
                 break
 
             actions = self.generate_actions(state)
@@ -36,7 +35,7 @@ class AdversarialSearchBot(Bot):
                 np.flatnonzero(utilities == utilities.max()))
             selected_action = actions[index]
 
-            print(i + 1, utilities)
+            # print(i + 1, utilities)
 
         return selected_action
 
@@ -126,21 +125,13 @@ class AdversarialSearchBot(Bot):
         max_depth: int = 0,
         alpha: float = -np.inf,
         beta: float = np.inf,
-        is_root: bool = True,
     ) -> float:
-        if is_root:
-            self.global_time = time() + TIMEOUT
-
-        if time() >= self.global_time:
-            self.is_global_time_stop = True
 
         if (
             self.terminal_test(state)
             or depth == max_depth
-            or self.is_global_time_stop
+            or time() >= self.global_time
         ):
-            self.global_time = 0
-            self.is_global_time_stop = False
             return self.get_utility(state)
 
         # Jika belum ketemu, maka akan dicari solusinya dengan dfs dengan turn yang bergantian.
