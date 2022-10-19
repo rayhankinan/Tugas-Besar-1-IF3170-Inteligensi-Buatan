@@ -154,8 +154,8 @@ class LocalSearchBot(Bot):
         elif self.chain_count(new_state) % 2 != 0 and not self.is_player1:
             utility += 3
             
-        if self.is_gameover(new_state):
-            utility += 999
+        # if self.is_gameover(new_state):
+        #     utility += 999
 
         return utility
 
