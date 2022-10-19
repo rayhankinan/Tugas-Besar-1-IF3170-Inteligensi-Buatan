@@ -13,11 +13,11 @@ class LocalSearchBot(Bot):
     # Inisialisasi Variable awal
     def __init__(
         self,
-        initial_temperature: float = 0,
+        end_temperature: float = 0,
         schedule: Callable[[int], float] = lambda t: math.e ** (-t / 100),
         precision: float = 1e-100,
     ) -> None:
-        self.initial_temperature = initial_temperature
+        self.end_temperature = end_temperature
         self.schedule = schedule
         self.precision = precision
         self.is_player1 = True
@@ -33,7 +33,7 @@ class LocalSearchBot(Bot):
         while True:
             # Perhitungan delta dengan presisi 1e-300
             current_temperature = self.schedule(start_time)
-            if abs(current_temperature - self.initial_temperature) <= self.precision or time() >= self.global_time:
+            if abs(current_temperature - self.end_temperature) <= self.precision or time() >= self.global_time:
                 break
 
             next = self.get_random_action(state)
