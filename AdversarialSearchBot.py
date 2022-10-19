@@ -25,15 +25,18 @@ class AdversarialSearchBot(Bot):
         row_not_filled = np.count_nonzero(state.row_status == 0)
         column_not_filled = np.count_nonzero(state.col_status == 0)
         for i in range(row_not_filled + column_not_filled):
-            if time() >= self.global_time:
-                break
+            # if time() >= self.global_time:
+            #     break
 
-            actions = self.generate_actions(state)
-            utilities = np.array([self.get_minimax_value(
-                state=self.get_result(state, action), max_depth=i + 1) for action in actions])
-            index = np.random.choice(
-                np.flatnonzero(utilities == utilities.max()))
-            selected_action = actions[index]
+            try:
+                actions = self.generate_actions(state)
+                utilities = np.array([self.get_minimax_value(
+                    state=self.get_result(state, action), max_depth=i + 1) for action in actions])
+                index = np.random.choice(
+                    np.flatnonzero(utilities == utilities.max()))
+                selected_action = actions[index]
+            except TimeoutError:
+                break
 
         return selected_action
 
@@ -124,12 +127,10 @@ class AdversarialSearchBot(Bot):
         alpha: float = -np.inf,
         beta: float = np.inf,
     ) -> float:
+        if time() >= self.global_time:
+            raise TimeoutError()
 
-        if (
-            self.terminal_test(state)
-            or depth == max_depth
-            or time() >= self.global_time
-        ):
+        if self.terminal_test(state) or depth == max_depth:
             return self.get_utility(state)
 
         # Jika belum ketemu, maka akan dicari solusinya dengan dfs dengan turn yang bergantian.
