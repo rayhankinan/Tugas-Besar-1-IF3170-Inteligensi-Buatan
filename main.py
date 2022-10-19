@@ -11,6 +11,8 @@ from GameState import GameState
 from RandomBot import RandomBot
 from LocalSearchBot import LocalSearchBot
 from AdversarialSearchBot import AdversarialSearchBot
+from AdversarialSearchBotWithChaining import AdversarialSearchBotWithChaining
+from AdversarialSearchBotWithGareTest import AdversarialSearchBotWithGareTest
 
 # == Tkinter Config
 size_of_board = 600
@@ -393,6 +395,6 @@ class Dots_and_Boxes:
 if __name__ == "__main__":
     game_instance = Dots_and_Boxes(
         AdversarialSearchBot(),
-        None
+        AdversarialSearchBotWithGareTest()
     )
     game_instance.mainloop()
