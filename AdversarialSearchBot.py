@@ -198,18 +198,18 @@ class AdversarialSearchBot(Bot):
         # TODO: Menambahkan heuristik transposition table (untuk melakukan caching nilai utility) dengan corner symmetry
 
         # == Count boxes
-        # for y in range(ny):
-        #     for x in range(nx):
-        #         if self.is_player1:
-        #             if state.board_status[y, x] == -4:
-        #                 utility += 1
-        #             elif state.board_status[y, x] == 4:
-        #                 utility -= 1
-        #         else:
-        #             if state.board_status[y, x] == -4:
-        #                 utility -= 1
-        #             elif state.board_status[y, x] == 4:
-        #                 utility += 1
+        for y in range(ny):
+            for x in range(nx):
+                if self.is_player1:
+                    if state.board_status[y, x] == -4:
+                        utility += 1
+                    elif state.board_status[y, x] == 4:
+                        utility -= 1
+                else:
+                    if state.board_status[y, x] == -4:
+                        utility -= 1
+                    elif state.board_status[y, x] == 4:
+                        utility += 1
 
         # # == Chain rule
         # if self.chain_count(state) % 2 == 0 and self.is_player1:
@@ -218,10 +218,10 @@ class AdversarialSearchBot(Bot):
         #     utility += 3
 
         # == Gare test
-        for y in range(ny):
-            for x in range(nx):
-                if abs(state.board_status[y, x]) == 4:
-                    utility += 1
+        # for y in range(ny):
+        #     for x in range(nx):
+        #         if abs(state.board_status[y, x]) == 4:
+        #             utility += 1
 
         # == Chain rule
         if self.chain_count(state) % 2 == 0 and self.is_player1:
@@ -229,14 +229,14 @@ class AdversarialSearchBot(Bot):
         elif self.chain_count(state) % 2 != 0 and not self.is_player1:
             utility += 3
 
-        if self.is_gameover(state):
-            utility += 999
+        # if self.is_gameover(state):
+        #     utility += 999
 
         # == if it's our turn then add utility else make it minus
-        if self.is_player1 == state.player1_turn:
-            utility = utility
-        else:
-            utility *= -1
+        # if self.is_player1 == state.player1_turn:
+        #     utility = utility
+        # else:
+        #     utility *= -1
 
         return utility
 
