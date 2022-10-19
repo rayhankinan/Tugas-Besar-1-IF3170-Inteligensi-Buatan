@@ -183,29 +183,94 @@ class AdversarialSearchBot(Bot):
         utility = 0
 
         # == Count boxes
-        cnt1 = 0
-        cnt2 = 0
+        box_won = 0
+        box_lost = 0
         for y in range(ny):
             for x in range(nx):
                 if self.is_player1:
                     if state.board_status[y, x] == -4:
                         utility += 1
-                        cnt1 += 1
+                        box_won += 1
                     elif state.board_status[y, x] == 4:
                         utility -= 1
-                        cnt2 += 1
+                        box_lost += 1
                 else:
                     if state.board_status[y, x] == -4:
                         utility -= 1
-                        cnt2 += 1
+                        box_lost += 1
                     elif state.board_status[y, x] == 4:
                         utility += 1
-                        cnt1 += 1
+                        box_won += 1
+
+        # Chain rule
+        if self.chain_count(state) % 2 == 0 and self.is_player1:
+            utility += 1
+        elif self.chain_count(state) % 2 != 0 and not self.is_player1:
+            utility += 1
 
         # Win/Lose Heuristics
-        if cnt1 >= 5:
-            utility += 1000
-        elif cnt2 >= 5:
-            utility -= 1000
+        if box_won >= 5:
+            utility = np.inf
+        elif box_lost >= 5:
+            utility = -np.inf
 
         return utility
+
+    # Count the number of long chain(s)
+    def chain_count(self, state: GameState) -> int:
+
+        chain_count = 0
+        chain_list: List[List[int]] = []
+
+        for box_num in range(9):
+
+            # Check if box is already part of a chain
+            flag = False
+            for chain in chain_list:
+                if box_num in chain:
+                    flag = True
+                    break
+
+            if not flag:
+                chain_list.append([box_num])
+                self.add_chain(state, chain_list, box_num)
+
+        for chain in chain_list:
+            if len(chain) >= 3:
+                chain_count += 1
+
+        return chain_count
+
+    # Find adjacent box(es) which can build chain
+    def add_chain(self, state: GameState, chain_list: List[List[int]], box_num):
+
+        neighbors_num = [box_num - 1, box_num - 3, box_num + 1, box_num + 3]
+
+        for idx in range(len(neighbors_num)):
+            if (
+                neighbors_num[idx] < 0
+                or neighbors_num[idx] > 8
+                or (idx % 2 == 0 and neighbors_num[idx] // 3 != box_num // 3)
+            ):
+                continue
+
+            flag = False
+            for chain in chain_list:
+                if neighbors_num[idx] in chain:
+                    flag = True
+                    break
+
+            if not flag and idx % 2 == 0:
+                reference = max(box_num, neighbors_num[idx])
+                if not state.col_status[reference // 3][reference % 3]:
+                    chain_list[-1].append(neighbors_num[idx])
+                    self.add_chain(state, chain_list, neighbors_num[idx])
+
+            if not flag and idx % 2 != 0:
+                reference = max(box_num, neighbors_num[idx])
+                if not state.row_status[reference // 3][reference % 3]:
+                    chain_list[-1].append(neighbors_num[idx])
+                    self.add_chain(state, chain_list, neighbors_num[idx])
+
+    def is_gameover(self, state: GameState):
+        return (state.row_status == 1).all() and (state.col_status == 1).all()
