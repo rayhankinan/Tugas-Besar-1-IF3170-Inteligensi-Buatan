@@ -138,18 +138,28 @@ class LocalSearchBot(Bot):
         # TODO: Menambahkan heuristik transposition table (untuk melakukan caching nilai utility) dengan corner symmetry
 
         # Menghitung jumlah box yang terbentuk
+        cnt1 = 0
+        cnt2 = 0
         for y in range(ny):
             for x in range(nx):
                 if self.is_player1:
                     if new_state.board_status[y, x] == -4:
                         utility += 1
+                        cnt1 += 1
                     elif new_state.board_status[y, x] == 4 or abs(new_state.board_status[y, x]) == 3:
                         utility -= 1
+                        cnt2 += 1
                 else:
                     if new_state.board_status[y, x] == -4 or abs(new_state.board_status[y, x]) == 3:
                         utility -= 1
+                        cnt2 += 1
                     elif new_state.board_status[y, x] == 4:
                         utility += 1
+                        cnt1 += 1
+        if cnt1 >= 5:
+            utility += 100
+        elif cnt2 >= 5:
+            utility -= 100
 
         # Chain rule
         # if self.chain_count(new_state) % 2 == 0 and self.is_player1:
