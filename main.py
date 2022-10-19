@@ -5,6 +5,7 @@
 
 from tkinter import *
 import numpy as np
+from Bot import Bot
 from typing import Optional
 from GameState import GameState
 from RandomBot import RandomBot
