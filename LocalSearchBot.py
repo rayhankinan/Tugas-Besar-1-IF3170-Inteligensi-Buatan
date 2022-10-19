@@ -7,8 +7,7 @@ import math
 import numpy as np
 from time import time
 
-TIMEOUT = 5
-
+TIMEOUT = 4.995
 
 class LocalSearchBot(Bot):
     # Inisialisasi Variable awal
@@ -135,8 +134,6 @@ class LocalSearchBot(Bot):
         [ny, nx] = new_state.board_status.shape
         utility = 0
 
-        # TODO: Menambahkan heuristik transposition table (untuk melakukan caching nilai utility) dengan corner symmetry
-
         # Menghitung jumlah box yang terbentuk
         box_won = 0
         box_lost = 0
@@ -226,6 +223,3 @@ class LocalSearchBot(Bot):
                 if not state.row_status[reference // 3][reference % 3]:
                     chain_list[-1].append(neighbors_num[idx])
                     self.add_chain(state, chain_list, neighbors_num[idx])
-
-    def is_gameover(self, state: GameState):
-        return (state.row_status == 1).all() and (state.col_status == 1).all()

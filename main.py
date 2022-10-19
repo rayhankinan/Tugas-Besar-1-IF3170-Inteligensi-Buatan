@@ -382,7 +382,6 @@ class Dots_and_Boxes:
             self.window.after(BOT_TURN_INTERVAL_MS, self.bot_turn, current_bot)
 
     def bot_turn(self, bot: Bot):
-        start_time = time()  # TODO: DELETE THIS LATER
         action = bot.get_action(
             GameState(
                 self.board_status.copy(),
@@ -391,8 +390,6 @@ class Dots_and_Boxes:
                 self.player1_turn,
             )
         )
-        end_time = time()  # TODO: DELETE THIS LATER
-        print(end_time - start_time)  # TODO: DELETE THIS LATER
         self.update(action.action_type, action.position)
 
 
