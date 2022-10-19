@@ -1,4 +1,4 @@
-from time import time
+import time as time_func
 from Bot import Bot
 from GameAction import GameAction
 from GameState import GameState
@@ -29,11 +29,11 @@ class LocalSearchBot(Bot):
 
         current = self.get_random_action(state)
         time = 1
-        Timeout = time() + TIMEOUT
+        Timeout = time_func.time() + TIMEOUT
         while True:
             # Perhitungan delta dengan presisi 1e-300
             current_temperature = self.schedule(time)
-            if abs(current_temperature - self.initial_temperature) <= self.precision or time() >= Timeout:
+            if abs(current_temperature - self.initial_temperature) <= self.precision or time_func.time() >= Timeout:
                 break
 
             next = self.get_random_action(state)

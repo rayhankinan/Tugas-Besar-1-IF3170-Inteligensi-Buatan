@@ -9,7 +9,7 @@ from typing import Optional
 from Bot import Bot
 from GameState import GameState
 from RandomBot import RandomBot
-from LocalSearchBot import LocalSearchBot
+from RandomBot import Bot as LocalSearchBot
 from AdversarialSearchBot import AdversarialSearchBot
 from AdversarialSearchBotWithChaining import AdversarialSearchBotWithChaining
 from AdversarialSearchBotWithGareTest import AdversarialSearchBotWithGareTest
@@ -388,13 +388,15 @@ class Dots_and_Boxes:
                 self.player1_turn,
             )
         )
-
+        print(action)
         self.update(action.action_type, action.position)
 
 
 if __name__ == "__main__":
     game_instance = Dots_and_Boxes(
-        AdversarialSearchBot(),
-        AdversarialSearchBotWithGareTest()
+        # AdversarialSearchBotWithChaining(),
+        AdversarialSearchBotWithGareTest(),
+        AdversarialSearchBot()
+        # LocalSearchBot(),
     )
     game_instance.mainloop()
