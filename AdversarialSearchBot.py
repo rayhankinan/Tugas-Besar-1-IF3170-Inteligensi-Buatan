@@ -209,10 +209,10 @@ class AdversarialSearchBot(Bot):
                         utility += 1
 
         # == Chain rule
-        if self.chain_count(state) % 2 == 0 and self.is_player1:
-            utility += 3
-        elif self.chain_count(state) % 2 != 0 and not self.is_player1:
-            utility += 3
+        # if self.chain_count(state) % 2 == 0 and self.is_player1:
+        #     utility += 3
+        # elif self.chain_count(state) % 2 != 0 and not self.is_player1:
+        #     utility += 3
 
         # == Gare test
         # for y in range(ny):
