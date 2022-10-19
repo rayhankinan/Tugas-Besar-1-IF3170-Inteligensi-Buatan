@@ -27,7 +27,6 @@ class AdversarialSearchBot(Bot):
         column_not_filled = np.count_nonzero(state.col_status == 0)
         for i in range(row_not_filled + column_not_filled):
             if time() >= timeout:
-                print(time() - timeout)
                 break
 
             actions = self.generate_actions(state)
@@ -209,17 +208,17 @@ class AdversarialSearchBot(Bot):
                     elif state.board_status[y, x] == 4:
                         utility += 1
 
-        # == Gare test
-        # for y in range(ny):
-        #     for x in range(nx):
-        #         if abs(state.board_status[y, x]) == 4:
-        #             utility += 1
-
         # == Chain rule
         if self.chain_count(state) % 2 == 0 and self.is_player1:
             utility += 3
         elif self.chain_count(state) % 2 != 0 and not self.is_player1:
             utility += 3
+
+        # == Gare test
+        # for y in range(ny):
+        #     for x in range(nx):
+        #         if abs(state.board_status[y, x]) == 4:
+        #             utility += 1
 
         # if self.is_gameover(state):
         #     utility += 999
