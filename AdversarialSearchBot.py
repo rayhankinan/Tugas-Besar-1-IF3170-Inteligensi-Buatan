@@ -22,6 +22,7 @@ class AdversarialSearchBot(Bot):
 
         selected_action: GameAction = None
         timeout = time() + TIMEOUT
+
         N = 1
         while True:
             if time() >= timeout:
@@ -33,9 +34,9 @@ class AdversarialSearchBot(Bot):
             index = np.random.choice(
                 np.flatnonzero(utilities == utilities.max()))
             selected_action = actions[index]
-            N += 1
 
             print(N, utilities)
+            N += 1
 
         return selected_action
 
@@ -214,10 +215,10 @@ class AdversarialSearchBot(Bot):
         #             utility += 1
 
         # == Chain rule
-        # if self.chain_count(state) % 2 == 0 and self.is_player1:
-        #     utility += 3
-        # elif self.chain_count(state) % 2 != 0 and not self.is_player1:
-        #     utility += 3
+        if self.chain_count(state) % 2 == 0 and self.is_player1:
+            utility += 3
+        elif self.chain_count(state) % 2 != 0 and not self.is_player1:
+            utility += 3
 
         # if self.is_gameover(state):
         #     utility += 999
