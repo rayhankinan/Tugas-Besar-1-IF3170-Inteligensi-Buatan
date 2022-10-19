@@ -388,15 +388,14 @@ class Dots_and_Boxes:
                 self.player1_turn,
             )
         )
-        print(action)
         self.update(action.action_type, action.position)
 
 
 if __name__ == "__main__":
     game_instance = Dots_and_Boxes(
         # AdversarialSearchBotWithChaining(),
-        #AdversarialSearchBotWithGareTest(),
-        AdversarialSearchBot(),
+        # AdversarialSearchBotWithGareTest(),
+        None,
         LocalSearchBot()
     )
     game_instance.mainloop()

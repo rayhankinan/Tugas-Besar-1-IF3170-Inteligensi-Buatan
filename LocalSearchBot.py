@@ -1,4 +1,4 @@
-import time as time_func
+from time import time
 from Bot import Bot
 from GameAction import GameAction
 from GameState import GameState
@@ -8,6 +8,7 @@ import math
 import numpy as np
 
 TIMEOUT = 5
+
 
 class LocalSearchBot(Bot):
     # Inisialisasi Variable awal
@@ -28,12 +29,12 @@ class LocalSearchBot(Bot):
         self.is_player1 = state.player1_turn
 
         current = self.get_random_action(state)
-        time = 1
-        self.global_time = time_func.time() + TIMEOUT
+        start_time = 1
+        self.global_time = time() + TIMEOUT
         while True:
             # Perhitungan delta dengan presisi 1e-300
-            current_temperature = self.schedule(time)
-            if abs(current_temperature - self.initial_temperature) <= self.precision or time_func.time() >= self.global_time:
+            current_temperature = self.schedule(start_time)
+            if abs(current_temperature - self.initial_temperature) <= self.precision or time() >= self.global_time:
                 break
 
             next = self.get_random_action(state)
@@ -43,7 +44,7 @@ class LocalSearchBot(Bot):
             # Jika delta positif atau tolerable maka ambil langkah selanjutnya
             if delta > 0 or random.random() < math.e ** (delta / current_temperature):
                 current = next
-            time += 1
+            start_time += 1
 
         return current
 
@@ -134,8 +135,6 @@ class LocalSearchBot(Bot):
         [ny, nx] = new_state.board_status.shape
         utility = 0
 
-        # TODO: Menambahkan heuristik transposition table (untuk melakukan caching nilai utility) dengan corner symmetry
-
         # Menghitung jumlah box yang terbentuk
         for y in range(ny):
             for x in range(nx):
@@ -213,6 +212,3 @@ class LocalSearchBot(Bot):
                 if not state.row_status[reference // 3][reference % 3]:
                     chain_list[-1].append(neighbors_num[idx])
                     self.add_chain(state, chain_list, neighbors_num[idx])
-
-    def is_gameover(self, state: GameState):
-        return (state.row_status == 1).all() and (state.col_status == 1).all()

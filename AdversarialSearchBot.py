@@ -35,8 +35,6 @@ class AdversarialSearchBot(Bot):
                 np.flatnonzero(utilities == utilities.max()))
             selected_action = actions[index]
 
-            # print(i + 1, utilities)
-
         return selected_action
 
     # == Generate list of game action
