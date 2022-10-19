@@ -6,7 +6,8 @@ from typing import List, Callable
 import random
 import math
 import numpy as np
-TIMEOUT = 4.7
+
+TIMEOUT = 4.75
 
 
 class LocalSearchBot(Bot):
@@ -150,10 +151,10 @@ class LocalSearchBot(Bot):
                         utility += 1
 
         # Chain rule
-        if self.chain_count(new_state) % 2 == 0 and self.is_player1:
-            utility += 3
-        elif self.chain_count(new_state) % 2 != 0 and not self.is_player1:
-            utility += 3
+        # if self.chain_count(new_state) % 2 == 0 and self.is_player1:
+        #     utility += 3
+        # elif self.chain_count(new_state) % 2 != 0 and not self.is_player1:
+        #     utility += 3
 
         return utility
 

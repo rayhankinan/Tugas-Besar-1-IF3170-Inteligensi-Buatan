@@ -1,11 +1,11 @@
-from time import perf_counter, time
+from time import time
 from Bot import Bot
 from GameAction import GameAction
 from GameState import GameState
 from typing import List
 import numpy as np
 
-TIMEOUT = 4.7
+TIMEOUT = 4.75
 
 
 class AdversarialSearchBot(Bot):
@@ -22,10 +22,10 @@ class AdversarialSearchBot(Bot):
         self.is_player1 = state.player1_turn
 
         selected_action: GameAction = None
-        Timeout = time() + TIMEOUT
+        timeout = time() + TIMEOUT
         for N in range(1, self.max_depth + 1):
 
-            if time() >= Timeout:
+            if time() >= timeout:
                 break
 
             actions = self.generate_actions(state)
@@ -34,6 +34,8 @@ class AdversarialSearchBot(Bot):
             index = np.random.choice(
                 np.flatnonzero(utilities == utilities.max()))
             selected_action = actions[index]
+
+            print(utilities)
 
         return selected_action
 
@@ -182,13 +184,7 @@ class AdversarialSearchBot(Bot):
 
     # == Check if terminal leaf has box
     def terminal_test(self, state: GameState) -> bool:
-        [ny, nx] = state.board_status.shape
-
-        for y in range(ny):
-            for x in range(nx):
-                if abs(state.board_status[y, x]) != 4:
-                    return False
-        return True
+        return np.all(state.row_status == 1) and np.all(state.col_status == 1)
 
     # Utility function dengan nilai absolute 1 jika box terbentuk.
     def get_utility(self, state: GameState) -> float:
@@ -211,12 +207,6 @@ class AdversarialSearchBot(Bot):
                     elif state.board_status[y, x] == 4:
                         utility += 1
 
-        # # == Chain rule
-        # if self.chain_count(state) % 2 == 0 and self.is_player1:
-        #     utility += 3
-        # elif self.chain_count(state) % 2 != 0 and not self.is_player1:
-        #     utility += 3
-
         # == Gare test
         # for y in range(ny):
         #     for x in range(nx):
@@ -224,10 +214,10 @@ class AdversarialSearchBot(Bot):
         #             utility += 1
 
         # == Chain rule
-        if self.chain_count(state) % 2 == 0 and self.is_player1:
-            utility += 3
-        elif self.chain_count(state) % 2 != 0 and not self.is_player1:
-            utility += 3
+        # if self.chain_count(state) % 2 == 0 and self.is_player1:
+        #     utility += 3
+        # elif self.chain_count(state) % 2 != 0 and not self.is_player1:
+        #     utility += 3
 
         # if self.is_gameover(state):
         #     utility += 999
@@ -295,6 +285,3 @@ class AdversarialSearchBot(Bot):
                 if not state.row_status[reference // 3][reference % 3]:
                     chain_list[-1].append(neighbors_num[idx])
                     self.add_chain(state, chain_list, neighbors_num[idx])
-
-    def is_gameover(self, state: GameState):
-        return (state.row_status == 1).all() and (state.col_status == 1).all()
