@@ -1,4 +1,4 @@
-from time import time
+import time as time_func
 from Bot import Bot
 from GameAction import GameAction
 from GameState import GameState
@@ -8,7 +8,6 @@ import math
 import numpy as np
 
 TIMEOUT = 5
-
 
 class LocalSearchBot(Bot):
     # Inisialisasi Variable awal
@@ -29,12 +28,12 @@ class LocalSearchBot(Bot):
         self.is_player1 = state.player1_turn
 
         current = self.get_random_action(state)
-        start_time = 1
-        self.global_time = time() + TIMEOUT
+        time = 1
+        self.global_time = time_func.time() + TIMEOUT
         while True:
             # Perhitungan delta dengan presisi 1e-300
-            current_temperature = self.schedule(start_time)
-            if abs(current_temperature - self.initial_temperature) <= self.precision or time() >= self.global_time:
+            current_temperature = self.schedule(time)
+            if abs(current_temperature - self.initial_temperature) <= self.precision or time_func.time() >= self.global_time:
                 break
 
             next = self.get_random_action(state)
@@ -44,7 +43,7 @@ class LocalSearchBot(Bot):
             # Jika delta positif atau tolerable maka ambil langkah selanjutnya
             if delta > 0 or random.random() < math.e ** (delta / current_temperature):
                 current = next
-            start_time += 1
+            time += 1
 
         return current
 
@@ -130,9 +129,12 @@ class LocalSearchBot(Bot):
 
     # Utility function dengan nilai absolute 1 jika box terbentuk.
     def get_value(self, state: GameState, action: GameAction) -> float:
+
         new_state = self.get_result(state, action)
         [ny, nx] = new_state.board_status.shape
         utility = 0
+
+        # TODO: Menambahkan heuristik transposition table (untuk melakukan caching nilai utility) dengan corner symmetry
 
         # Menghitung jumlah box yang terbentuk
         for y in range(ny):
@@ -148,4 +150,69 @@ class LocalSearchBot(Bot):
                     elif new_state.board_status[y, x] == 4:
                         utility += 1
 
+        # Chain rule
+        # if self.chain_count(new_state) % 2 == 0 and self.is_player1:
+        #     utility += 3
+        # elif self.chain_count(new_state) % 2 != 0 and not self.is_player1:
+        #     utility += 3
+
         return utility
+
+    # Count the number of long chain(s)
+    def chain_count(self, state: GameState) -> int:
+
+        chain_count = 0
+        chain_list: List[List[int]] = []
+
+        for box_num in range(9):
+
+            # Check if box is already part of a chain
+            flag = False
+            for chain in chain_list:
+                if box_num in chain:
+                    flag = True
+                    break
+
+            if not flag:
+                chain_list.append([box_num])
+                self.add_chain(state, chain_list, box_num)
+
+        for chain in chain_list:
+            if len(chain) >= 3:
+                chain_count += 1
+
+        return chain_count
+
+    # Find adjacent box(es) which can build chain
+    def add_chain(self, state: GameState, chain_list: List[List[int]], box_num):
+
+        neighbors_num = [box_num - 1, box_num - 3, box_num + 1, box_num + 3]
+
+        for idx in range(len(neighbors_num)):
+            if (
+                neighbors_num[idx] < 0
+                or neighbors_num[idx] > 8
+                or (idx % 2 == 0 and neighbors_num[idx] // 3 != box_num // 3)
+            ):
+                continue
+
+            flag = False
+            for chain in chain_list:
+                if neighbors_num[idx] in chain:
+                    flag = True
+                    break
+
+            if not flag and idx % 2 == 0:
+                reference = max(box_num, neighbors_num[idx])
+                if not state.col_status[reference // 3][reference % 3]:
+                    chain_list[-1].append(neighbors_num[idx])
+                    self.add_chain(state, chain_list, neighbors_num[idx])
+
+            if not flag and idx % 2 != 0:
+                reference = max(box_num, neighbors_num[idx])
+                if not state.row_status[reference // 3][reference % 3]:
+                    chain_list[-1].append(neighbors_num[idx])
+                    self.add_chain(state, chain_list, neighbors_num[idx])
+
+    def is_gameover(self, state: GameState):
+        return (state.row_status == 1).all() and (state.col_status == 1).all()
