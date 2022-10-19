@@ -7,6 +7,7 @@ import numpy as np
 
 TIMEOUT = 4.7
 
+
 class AdversarialSearchBot(Bot):
 
     # == Initialize bot
@@ -28,17 +29,11 @@ class AdversarialSearchBot(Bot):
                 break
 
             actions = self.generate_actions(state)
-            utilities = np.array(
-                [
-                    self.get_minimax_value(
-                        state=self.get_result(state, action), max_depth=N)
-                    for action in actions
-                ]
-            )
+            utilities = np.array([self.get_minimax_value(
+                state=self.get_result(state, action), max_depth=N) for action in actions])
             index = np.random.choice(
                 np.flatnonzero(utilities == utilities.max()))
             selected_action = actions[index]
-
 
         return selected_action
 
@@ -146,7 +141,7 @@ class AdversarialSearchBot(Bot):
             return self.get_utility(state)
 
         # Jika belum ketemu, maka akan dicari solusinya dengan dfs dengan turn yang bergantian.
-        # Jika nilai terbaik dari maximizer sudah sama atau melebihi nilai terbaik dari minimzer (alpha lebih dari sama dengan beta)
+        # Jika nilai terbaik dari maximizer sudah sama atau melebihi nilai terbaik dari minimizer (alpha lebih dari sama dengan beta)
         # Pencarian neighbor dapat dihentikan karena dapat dipastikan nilai minimum yang kita cari merupakan langkah optimum musuh
         if self.is_player1 == state.player1_turn:
             value = -np.inf
@@ -156,10 +151,10 @@ class AdversarialSearchBot(Bot):
                     value,
                     self.get_minimax_value(
                         self.get_result(state, action),
-                        depth + 1,
-                        alpha,
-                        beta,
-                        False,
+                        depth=depth + 1,
+                        max_depth=max_depth,
+                        alpha=alpha,
+                        beta=beta
                     ),
                 )
                 alpha = max(alpha, value)
@@ -174,10 +169,10 @@ class AdversarialSearchBot(Bot):
                     value,
                     self.get_minimax_value(
                         self.get_result(state, action),
-                        depth + 1,
-                        alpha,
-                        beta,
-                        False,
+                        depth=depth + 1,
+                        max_depth=max_depth,
+                        alpha=alpha,
+                        beta=beta
                     ),
                 )
                 beta = min(beta, value)
@@ -203,45 +198,45 @@ class AdversarialSearchBot(Bot):
         # TODO: Menambahkan heuristik transposition table (untuk melakukan caching nilai utility) dengan corner symmetry
 
         # == Count boxes
-        # for y in range(ny):
-        #     for x in range(nx):
-        #         if self.is_player1:
-        #             if state.board_status[y, x] == -4:
-        #                 utility += 1
-        #             elif state.board_status[y, x] == 4:
-        #                 utility -= 1
-        #         else:
-        #             if state.board_status[y, x] == -4:
-        #                 utility -= 1
-        #             elif state.board_status[y, x] == 4:
-        #                 utility += 1
+        for y in range(ny):
+            for x in range(nx):
+                if self.is_player1:
+                    if state.board_status[y, x] == -4:
+                        utility += 1
+                    elif state.board_status[y, x] == 4:
+                        utility -= 1
+                else:
+                    if state.board_status[y, x] == -4:
+                        utility -= 1
+                    elif state.board_status[y, x] == 4:
+                        utility += 1
 
         # # == Chain rule
         # if self.chain_count(state) % 2 == 0 and self.is_player1:
         #     utility += 3
         # elif self.chain_count(state) % 2 != 0 and not self.is_player1:
         #     utility += 3
-  
+
         # == Gare test
-        for y in range(ny):
-            for x in range(nx):
-              if abs(state.board_status[y, x]) == 4:
-                  utility += 1
+        # for y in range(ny):
+        #     for x in range(nx):
+        #         if abs(state.board_status[y, x]) == 4:
+        #             utility += 1
 
         # == Chain rule
         if self.chain_count(state) % 2 == 0 and self.is_player1:
             utility += 3
         elif self.chain_count(state) % 2 != 0 and not self.is_player1:
             utility += 3
-        
-        if self.is_gameover(state):
-            utility += 999
-        
+
+        # if self.is_gameover(state):
+        #     utility += 999
+
         # == if it's our turn then add utility else make it minus
-        if self.is_player1 == state.player1_turn:
-            utility = utility
-        else:
-            utility *= -1
+        # if self.is_player1 == state.player1_turn:
+        #     utility = utility
+        # else:
+        #     utility *= -1
 
         return utility
 

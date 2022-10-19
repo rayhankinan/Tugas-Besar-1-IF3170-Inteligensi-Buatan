@@ -8,6 +8,7 @@ import math
 import numpy as np
 TIMEOUT = 4.7
 
+
 class LocalSearchBot(Bot):
     # Inisialisasi Variable awal
     def __init__(
