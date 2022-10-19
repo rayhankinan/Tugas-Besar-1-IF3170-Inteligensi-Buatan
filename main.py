@@ -14,6 +14,7 @@ from AdversarialSearchBotWithChaining import AdversarialSearchBotWithChaining
 from AdversarialSearchBotWithGareTest import AdversarialSearchBotWithGareTest
 from LocalSearchBot import LocalSearchBot
 from LocalSearchBotWithChaining import LocalSearchBotWithChaining
+from time import time
 
 # == Tkinter Config
 size_of_board = 600
@@ -381,6 +382,7 @@ class Dots_and_Boxes:
             self.window.after(BOT_TURN_INTERVAL_MS, self.bot_turn, current_bot)
 
     def bot_turn(self, bot: Bot):
+        start_time = time()  # TODO: DELETE THIS LATER
         action = bot.get_action(
             GameState(
                 self.board_status.copy(),
@@ -389,12 +391,14 @@ class Dots_and_Boxes:
                 self.player1_turn,
             )
         )
+        end_time = time()  # TODO: DELETE THIS LATER
+        print(end_time - start_time)  # TODO: DELETE THIS LATER
         self.update(action.action_type, action.position)
 
 
 if __name__ == "__main__":
     game_instance = Dots_and_Boxes(
-        None,
+        LocalSearchBot(),
         AdversarialSearchBot()
     )
     game_instance.mainloop()

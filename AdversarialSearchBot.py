@@ -5,7 +5,7 @@ from GameState import GameState
 from typing import List
 import numpy as np
 
-TIMEOUT = 4.7
+TIMEOUT = 5
 
 
 class AdversarialSearchBot(Bot):

@@ -5,8 +5,9 @@ from GameAction import GameAction
 import numpy as np
 from typing import List
 
-TIMEOUT = 4.7
+TIMEOUT = 5
 MAX_DEPTH = 6
+
 
 class AdversarialSearchBotWithGareTest(AdversarialSearchBot):
     def get_action(self, state: GameState) -> GameAction:
@@ -16,20 +17,20 @@ class AdversarialSearchBotWithGareTest(AdversarialSearchBot):
         for depth in range(MAX_DEPTH):
             if time() >= self.global_time:
                 break
-            
+
             generated_actions = self.generate_actions(state)
             utils = np.array([
-              self.get_minimax_value(state=self.get_result(state, action), max_depth=depth+1) for action in generated_actions
+                self.get_minimax_value(state=self.get_result(state, action), max_depth=depth+1) for action in generated_actions
             ])
-            
+
             selected_index = np.random.choice(
-              np.flatnonzero(utils == utils.max())
+                np.flatnonzero(utils == utils.max())
             )
             print(depth + 1, ": ", utils, "SELECTED IDX: ", selected_index)
             selected_action = generated_actions[selected_index]
-            
-        return selected_action 
-    
+
+        return selected_action
+
     def generate_actions(self, state: GameState) -> List[GameAction]:
         row_positions = self.generate_positions(state.row_status)
         col_positions = self.generate_positions(state.col_status)
@@ -42,7 +43,7 @@ class AdversarialSearchBotWithGareTest(AdversarialSearchBot):
             actions.append(GameAction("col", position))
 
         return actions
-    
+
     def get_result(self, state: GameState, action: GameAction) -> GameState:
         type = action.action_type
         x, y = action.position
@@ -91,10 +92,10 @@ class AdversarialSearchBotWithGareTest(AdversarialSearchBot):
                     is_point_scored = True
         is_player1_turn = not new_state.player1_turn if not is_point_scored else new_state.player1_turn
         new_state = new_state._replace(
-            player1_turn= is_player1_turn
+            player1_turn=is_player1_turn
         )
         return new_state
-    
+
     def get_minimax_value(
         self,
         state: GameState,
@@ -149,7 +150,7 @@ class AdversarialSearchBotWithGareTest(AdversarialSearchBot):
                 if beta <= alpha:
                     break
             return value
-    
+
     def get_utility(self, state: GameState) -> float:
         [ny, nx] = state.board_status.shape
         utility = 0
@@ -161,38 +162,38 @@ class AdversarialSearchBotWithGareTest(AdversarialSearchBot):
         #     for x in range(nx):
         #         board_status = state.board_status[y, x]
         #         sign = -1 if board_status < 0 else 1
-                # if bot is player 1
-                # if board_status is < 0 then it currently mark by bot
-                # 4 is priority then 3 then 1 then 2
-                # if self.is_player1:
-                #     if abs(board_status) == 4:
-                #         utility += 50 if sign < 0 else -50
-                #     elif abs(board_status) == 3:
-                #         utility += 50 if sign < 0 else -50
-                #     elif abs(board_status) == 2:
-                #         utility += -25 if sign < 0 else 5
-                #     else:
-                #         utility += 10 if sign < 0 else -10
-                # else:
-                #     if abs(board_status) == 4:
-                #         utility += -50 if sign < 0 else 50
-                #     elif abs(board_status) == 3:
-                #         utility += -50 if sign < 0 else 50
-                #     elif abs(board_status) == 2:
-                #         utility += 25 if sign < 0 else -5
-                #     else:
-                #         utility += -10 if sign < 0 else 10
+        # if bot is player 1
+        # if board_status is < 0 then it currently mark by bot
+        # 4 is priority then 3 then 1 then 2
+        # if self.is_player1:
+        #     if abs(board_status) == 4:
+        #         utility += 50 if sign < 0 else -50
+        #     elif abs(board_status) == 3:
+        #         utility += 50 if sign < 0 else -50
+        #     elif abs(board_status) == 2:
+        #         utility += -25 if sign < 0 else 5
+        #     else:
+        #         utility += 10 if sign < 0 else -10
+        # else:
+        #     if abs(board_status) == 4:
+        #         utility += -50 if sign < 0 else 50
+        #     elif abs(board_status) == 3:
+        #         utility += -50 if sign < 0 else 50
+        #     elif abs(board_status) == 2:
+        #         utility += 25 if sign < 0 else -5
+        #     else:
+        #         utility += -10 if sign < 0 else 10
         for y in range(ny):
-          for x in range(nx):
-              if self.is_player1:
-                  if state.board_status[y, x] == -4:
-                      utility += 10
-                  elif state.board_status[y, x] == 4:
-                      utility -= 2
-              else:
-                  if state.board_status[y, x] == -4:
-                      utility -= 2
-                  elif state.board_status[y, x] == 4:
-                      utility += 10
+            for x in range(nx):
+                if self.is_player1:
+                    if state.board_status[y, x] == -4:
+                        utility += 10
+                    elif state.board_status[y, x] == 4:
+                        utility -= 2
+                else:
+                    if state.board_status[y, x] == -4:
+                        utility -= 2
+                    elif state.board_status[y, x] == 4:
+                        utility += 10
 
         return utility
