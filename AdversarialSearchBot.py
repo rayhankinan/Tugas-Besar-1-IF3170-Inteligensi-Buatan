@@ -182,17 +182,27 @@ class AdversarialSearchBot(Bot):
         utility = 0
 
         # == Count boxes
+        cnt1 = 0
+        cnt2 = 0
         for y in range(ny):
             for x in range(nx):
                 if self.is_player1:
                     if state.board_status[y, x] == -4:
                         utility += 1
+                        cnt1 += 1
                     elif state.board_status[y, x] == 4:
                         utility -= 1
+                        cnt2 += 1
                 else:
                     if state.board_status[y, x] == -4:
                         utility -= 1
+                        cnt2 += 1
                     elif state.board_status[y, x] == 4:
                         utility += 1
-
+                        cnt1 += 1
+        if cnt1 >= 5:
+            utility += 100
+        elif cnt2 >= 5:
+            utility -= 100
+        
         return utility

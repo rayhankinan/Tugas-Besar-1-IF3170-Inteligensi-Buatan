@@ -396,7 +396,7 @@ if __name__ == "__main__":
     game_instance = Dots_and_Boxes(
         # AdversarialSearchBotWithChaining(),
         # AdversarialSearchBotWithGareTest(),
-        None,
-        LocalSearchBotWithChaining()
+        LocalSearchBotWithChaining(),
+        LocalSearchBot()
     )
     game_instance.mainloop()
