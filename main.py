@@ -392,7 +392,7 @@ class Dots_and_Boxes:
 
 if __name__ == "__main__":
     game_instance = Dots_and_Boxes(
-        None,
-        AdversarialSearchBot(max_depth=4)
+        AdversarialSearchBot(),
+        None
     )
     game_instance.mainloop()

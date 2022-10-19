@@ -11,8 +11,7 @@ TIMEOUT = 4.75
 class AdversarialSearchBot(Bot):
 
     # == Initialize bot
-    def __init__(self, max_depth: int = 5):
-        self.max_depth = max_depth
+    def __init__(self):
         self.is_player1 = True
         self.is_global_time_stop = False
         self.global_time = 0
@@ -23,8 +22,8 @@ class AdversarialSearchBot(Bot):
 
         selected_action: GameAction = None
         timeout = time() + TIMEOUT
-        for N in range(1, self.max_depth + 1):
-
+        N = 1
+        while True:
             if time() >= timeout:
                 break
 
@@ -34,8 +33,9 @@ class AdversarialSearchBot(Bot):
             index = np.random.choice(
                 np.flatnonzero(utilities == utilities.max()))
             selected_action = actions[index]
+            N += 1
 
-            print(utilities)
+            print(N, utilities)
 
         return selected_action
 
