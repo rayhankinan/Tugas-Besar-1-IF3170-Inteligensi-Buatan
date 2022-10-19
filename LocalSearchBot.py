@@ -156,16 +156,12 @@ class LocalSearchBot(Bot):
                     elif new_state.board_status[y, x] == 4:
                         utility += 1
                         cnt1 += 1
-        if cnt1 >= 5:
-            utility += 100
-        elif cnt2 >= 5:
-            utility -= 100
 
-        # Chain rule
-        # if self.chain_count(new_state) % 2 == 0 and self.is_player1:
-        #     utility += 3
-        # elif self.chain_count(new_state) % 2 != 0 and not self.is_player1:
-        #     utility += 3
+        # Win/Lose Heuristics
+        if cnt1 >= 5:
+            utility += 1000
+        elif cnt2 >= 5:
+            utility -= 1000
 
         return utility
 

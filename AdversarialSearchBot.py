@@ -201,9 +201,11 @@ class AdversarialSearchBot(Bot):
                     elif state.board_status[y, x] == 4:
                         utility += 1
                         cnt1 += 1
+
+        # Win/Lose Heuristics
         if cnt1 >= 5:
-            utility += 100
+            utility += 1000
         elif cnt2 >= 5:
-            utility -= 100
-        
+            utility -= 1000
+
         return utility
