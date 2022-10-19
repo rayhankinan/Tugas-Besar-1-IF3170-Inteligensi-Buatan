@@ -10,10 +10,7 @@ from typing import Optional
 from GameState import GameState
 from RandomBot import RandomBot
 from AdversarialSearchBot import AdversarialSearchBot
-from AdversarialSearchBotWithChaining import AdversarialSearchBotWithChaining
-from AdversarialSearchBotWithGareTest import AdversarialSearchBotWithGareTest
 from LocalSearchBot import LocalSearchBot
-from LocalSearchBotWithChaining import LocalSearchBotWithChaining
 from time import time
 
 # == Tkinter Config
