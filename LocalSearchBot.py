@@ -159,9 +159,9 @@ class LocalSearchBot(Bot):
 
         # Win/Lose Heuristics
         if cnt1 >= 5:
-            utility += 1000
+            utility = np.inf
         elif cnt2 >= 5:
-            utility -= 1000
+            utility = -np.inf
 
         return utility
 
