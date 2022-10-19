@@ -7,8 +7,7 @@ import random
 import math
 import numpy as np
 
-TIMEOUT = 2.5
-
+TIMEOUT = 5
 
 class LocalSearchBot(Bot):
     # Inisialisasi Variable awal
@@ -22,6 +21,7 @@ class LocalSearchBot(Bot):
         self.schedule = schedule
         self.precision = precision
         self.is_player1 = True
+        self.global_time = 0
 
     # Pemilihan aksi yang akan dilakukan agent
     def get_action(self, state: GameState) -> GameAction:
@@ -29,11 +29,11 @@ class LocalSearchBot(Bot):
 
         current = self.get_random_action(state)
         time = 1
-        Timeout = time_func.time() + TIMEOUT
+        self.global_time = time_func.time() + TIMEOUT
         while True:
             # Perhitungan delta dengan presisi 1e-300
             current_temperature = self.schedule(time)
-            if abs(current_temperature - self.initial_temperature) <= self.precision or time_func.time() >= Timeout:
+            if abs(current_temperature - self.initial_temperature) <= self.precision or time_func.time() >= self.global_time:
                 break
 
             next = self.get_random_action(state)

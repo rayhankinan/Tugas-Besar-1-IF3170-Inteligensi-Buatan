@@ -6,10 +6,9 @@
 from tkinter import *
 import numpy as np
 from typing import Optional
-from Bot import Bot
 from GameState import GameState
 from RandomBot import RandomBot
-from RandomBot import Bot as LocalSearchBot
+from LocalSearchBot import LocalSearchBot
 from AdversarialSearchBot import AdversarialSearchBot
 from AdversarialSearchBotWithChaining import AdversarialSearchBotWithChaining
 from AdversarialSearchBotWithGareTest import AdversarialSearchBotWithGareTest
@@ -396,7 +395,7 @@ if __name__ == "__main__":
     game_instance = Dots_and_Boxes(
         # AdversarialSearchBotWithChaining(),
         AdversarialSearchBotWithGareTest(),
-        AdversarialSearchBot()
-        # LocalSearchBot(),
+        # AdversarialSearchBot()
+        LocalSearchBot(),
     )
     game_instance.mainloop()
